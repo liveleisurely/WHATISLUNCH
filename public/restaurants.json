@@ -1,0 +1,29 @@
+{
+    "restaurants": [
+      {
+        "name": "포가레",
+        "menu": "곱창쌀국수, 반세오, 직화소고기 쌀국수",
+        "latitude": 37.5606715,
+        "longitude": 126.9235849,
+        "distance": "2152m",
+        "category": "기타"
+      },
+      {
+        "name": "덮밥만드는남자 이대점",
+        "menu": "고기덮밥, 매콤달콤삼겹덮밥",
+        "latitude": 37.5581109,
+        "longitude": 126.9460558,
+        "distance": "229m",
+        "category": "한식"
+      },
+      {
+        "name": "연어초밥 이대점",
+        "menu": "초밥",
+        "latitude": 37.5572679,
+        "longitude": 126.9433882,
+        "distance": "474m",
+        "category": "일식"
+      }
+    ]
+  }
+  
