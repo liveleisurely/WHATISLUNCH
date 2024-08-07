@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Typography, TextField, Button, Box } from '@mui/material';
+import { ToggleButton, ToggleButtonGroup } from '@mui/lab';
 import FileBase64 from 'react-file-base64';
 import * as XLSX from 'xlsx';
 
@@ -7,13 +8,21 @@ const AddRestaurant = ({ addRestaurant }) => {
   const [formData, setFormData] = useState({
     name: '',
     menu: '',
-    address: ''
+    address: '',
+    category: '기타'
   });
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
+    });
+  };
+
+  const handleCategoryChange = (event, newCategory) => {
+    setFormData({
+      ...formData,
+      category: newCategory || formData.category
     });
   };
 
@@ -24,10 +33,9 @@ const AddRestaurant = ({ addRestaurant }) => {
       distance: '0m',  // 임시 거리 값
       latitude: 0,     // 임시 위도 값
       longitude: 0,    // 임시 경도 값
-      category: '기타' // 임시 카테고리 값
     };
     addRestaurant(newRestaurant);
-    setFormData({ name: '', menu: '', address: '' });
+    setFormData({ name: '', menu: '', address: '', category: '기타' });
   };
 
   const handleFileUpload = (file) => {
@@ -37,15 +45,15 @@ const AddRestaurant = ({ addRestaurant }) => {
     const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
 
     data.slice(1).forEach(row => {
-      const [name, menu, address] = row;
+      const [name, menu, address, category] = row;
       const newRestaurant = {
         name,
         menu,
         address,
+        category: category || '기타',
         distance: '0m',  // 임시 거리 값
         latitude: 0,     // 임시 위도 값
         longitude: 0,    // 임시 경도 값
-        category: '기타' // 임시 카테고리 값
       };
       addRestaurant(newRestaurant);
     });
@@ -89,6 +97,20 @@ const AddRestaurant = ({ addRestaurant }) => {
             required
           />
         </Box>
+        <ToggleButtonGroup
+          value={formData.category}
+          exclusive
+          onChange={handleCategoryChange}
+          aria-label="음식 카테고리"
+          style={{ marginTop: '20px', marginBottom: '20px' }}
+        >
+          <ToggleButton value="한식">한식</ToggleButton>
+          <ToggleButton value="일식">일식</ToggleButton>
+          <ToggleButton value="중식">중식</ToggleButton>
+          <ToggleButton value="양식">양식</ToggleButton>
+          <ToggleButton value="분식">분식</ToggleButton>
+          <ToggleButton value="기타">기타</ToggleButton>
+        </ToggleButtonGroup>
         <Button variant="contained" color="primary" type="submit">
           저장
         </Button>
@@ -100,7 +122,7 @@ const AddRestaurant = ({ addRestaurant }) => {
         multiple={false}
         onDone={handleFileUpload}
       />
-      <a href="/restaurants.json" download>
+      <a href="http://localhost:5000/download_template" download>
         엑셀 템플릿 다운로드
       </a>
     </Container>

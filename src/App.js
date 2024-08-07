@@ -5,6 +5,27 @@ import axios from 'axios';
 import AddRestaurant from './components/AddRestaurant';
 import RestaurantList from './components/RestaurantList';
 
+const companyLat = 37.559518;
+const companyLon = 126.9479577;
+
+const haversine = (lat1, lon1, lat2, lon2) => {
+  const R = 6371.0; // 지구 반지름 (km)
+  const toRadians = angle => (angle * Math.PI) / 180;
+
+  const dLat = toRadians(lat2 - lat1);
+  const dLon = toRadians(lon2 - lon1);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  const distanceKm = R * c;
+  const distanceM = distanceKm * 1000; // 미터 단위로 변환
+  return distanceM;
+};
+
 const App = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [recommended, setRecommended] = useState(null);
@@ -16,7 +37,11 @@ const App = () => {
     } else {
       axios.get('/restaurants.json')
         .then(response => {
-          setRestaurants(response.data.restaurants);
+          const updatedRestaurants = response.data.restaurants.map(restaurant => ({
+            ...restaurant,
+            distance: `${Math.round(haversine(companyLat, companyLon, restaurant.latitude, restaurant.longitude))}m`
+          }));
+          setRestaurants(updatedRestaurants);
         })
         .catch(error => {
           console.error('Error fetching data:', error);
@@ -34,7 +59,11 @@ const App = () => {
   };
 
   const addRestaurant = (newRestaurant) => {
-    setRestaurants([...restaurants, newRestaurant]);
+    const updatedRestaurant = {
+      ...newRestaurant,
+      distance: `${Math.round(haversine(companyLat, companyLon, newRestaurant.latitude, newRestaurant.longitude))}m`
+    };
+    setRestaurants([...restaurants, updatedRestaurant]);
   };
 
   return (
