@@ -16,27 +16,27 @@ const RestaurantList = ({ restaurants }) => {
   });
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} style={{ marginTop: '40px' }}>
       {Object.keys(categorizedRestaurants).map(category => (
-        <Grid item xs={12} sm={6} key={category}>
-          <Typography variant="h5" align="center" gutterBottom>
+        <Grid item xs={12} sm={6} key={category} style={{ marginBottom: '40px' }}>
+          <Typography variant="h5" align="center" gutterBottom style={{ fontWeight: 'bold' }}>
             {category}
           </Typography>
           <TableContainer component={Paper}>
             <Table>
-              <TableHead>
+              <TableHead style={{ backgroundColor: '#e0f7fa' }}>
                 <TableRow>
-                  <TableCell>가게이름</TableCell>
-                  <TableCell>주요메뉴</TableCell>
-                  <TableCell>회사와의 거리</TableCell>
+                  <TableCell align="center" style={{ fontWeight: 'bold' }}>가게이름</TableCell>
+                  <TableCell align="center" style={{ fontWeight: 'bold' }}>주요메뉴</TableCell>
+                  <TableCell align="center" style={{ fontWeight: 'bold' }}>회사와의 거리</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {categorizedRestaurants[category].map((restaurant, index) => (
                   <TableRow key={index}>
-                    <TableCell>{restaurant.name}</TableCell>
-                    <TableCell>{restaurant.menu}</TableCell>
-                    <TableCell>{restaurant.distance}</TableCell>
+                    <TableCell align="center">{restaurant.name}</TableCell>
+                    <TableCell align="center">{restaurant.menu}</TableCell>
+                    <TableCell align="center">{restaurant.distance}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

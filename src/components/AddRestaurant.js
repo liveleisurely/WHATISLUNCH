@@ -3,6 +3,7 @@ import { Container, Typography, TextField, Button, Box } from '@mui/material';
 import { ToggleButton, ToggleButtonGroup } from '@mui/lab';
 import FileBase64 from 'react-file-base64';
 import * as XLSX from 'xlsx';
+import axios from 'axios';
 
 const AddRestaurant = ({ addRestaurant }) => {
   const [formData, setFormData] = useState({
@@ -26,16 +27,15 @@ const AddRestaurant = ({ addRestaurant }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newRestaurant = {
-      ...formData,
-      distance: '0m',  // 임시 거리 값
-      latitude: 0,     // 임시 위도 값
-      longitude: 0,    // 임시 경도 값
-    };
-    addRestaurant(newRestaurant);
-    setFormData({ name: '', menu: '', address: '', category: '기타' });
+    try {
+      const response = await axios.post('http://localhost:5000/add_restaurant', formData);
+      addRestaurant(response.data);
+      setFormData({ name: '', menu: '', address: '', category: '기타' });
+    } catch (error) {
+      console.error('Error adding restaurant:', error);
+    }
   };
 
   const handleFileUpload = (file) => {
@@ -44,18 +44,19 @@ const AddRestaurant = ({ addRestaurant }) => {
     const ws = wb.Sheets[wb.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
 
-    data.slice(1).forEach(row => {
+    data.slice(1).forEach(async (row) => {
       const [name, menu, address, category] = row;
       const newRestaurant = {
         name,
         menu,
         address,
-        category: category || '기타',
-        distance: '0m',  // 임시 거리 값
-        latitude: 0,     // 임시 위도 값
-        longitude: 0,    // 임시 경도 값
+        category: category || '기타'
       };
-      addRestaurant(newRestaurant);
+      try {
+        await axios.post('http://localhost:5000/add_restaurant', newRestaurant);
+      } catch (error) {
+        console.error('Error adding restaurant from file:', error);
+      }
     });
   };
 
@@ -122,9 +123,9 @@ const AddRestaurant = ({ addRestaurant }) => {
         multiple={false}
         onDone={handleFileUpload}
       />
-      <a href="http://localhost:5000/download_template" download>
+      <Button variant="contained" color="primary" href="http://localhost:5000/download_template" download>
         엑셀 템플릿 다운로드
-      </a>
+      </Button>
     </Container>
   );
 };

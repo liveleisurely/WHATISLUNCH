@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# private file
+Ontact_luch.xlsx
+api_config.py
