@@ -5,7 +5,7 @@ import { Grid, Paper } from '@mui/material';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const Statistics = () => {
+const Statistics = ({ stats }) => {
   const [dailyChartData, setDailyChartData] = useState({ labels: [], datasets: [] });
   const [weeklyChartData, setWeeklyChartData] = useState({ labels: [], datasets: [] });
   const [monthlyChartData, setMonthlyChartData] = useState({ labels: [], datasets: [] });
@@ -18,8 +18,6 @@ const Statistics = () => {
   });
 
   useEffect(() => {
-    const savedData = JSON.parse(localStorage.getItem('restaurantStats')) || [];
-
     const today = new Date();
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
@@ -31,7 +29,7 @@ const Statistics = () => {
     const monthNames = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
 
     // 일별 통계
-    const dailyData = savedData.reduce((acc, entry) => {
+    const dailyData = stats.reduce((acc, entry) => {
       if (acc[entry.name]) {
         acc[entry.name] += 1;
       } else {
@@ -41,17 +39,16 @@ const Statistics = () => {
     }, {});
 
     // 주별 통계
-    const weeklyData = savedData.reduce((acc, entry) => {
+    const weeklyData = stats.reduce((acc, entry) => {
       const week = Math.ceil(new Date(entry.date).getDate() / 7);
       const weekLabel = `${week}주차`;
       if (!acc[weekLabel]) {
         acc[weekLabel] = {};
       }
-      if (acc[weekLabel][entry.name]) {
-        acc[weekLabel][entry.name] += 1;
-      } else {
-        acc[weekLabel][entry.name] = 1;
+      if (!acc[weekLabel][entry.name]) {
+        acc[weekLabel][entry.name] = 0;
       }
+      acc[weekLabel][entry.name] += 1;
       return acc;
     }, {});
 
@@ -85,16 +82,15 @@ const Statistics = () => {
     });
 
     // 월별 통계
-    const monthlyData = savedData.reduce((acc, entry) => {
-      const monthIndex = new Date(entry.date).getMonth(); // 0부터 시작하는 월 인덱스 사용
-      if (!acc[monthIndex]) {
-        acc[monthIndex] = {};
+    const monthlyData = stats.reduce((acc, entry) => {
+      const monthKey = entry.month;
+      if (!acc[monthKey]) {
+        acc[monthKey] = {};
       }
-      if (acc[monthIndex][entry.name]) {
-        acc[monthIndex][entry.name] += 1;
-      } else {
-        acc[monthIndex][entry.name] = 1;
+      if (!acc[monthKey][entry.name]) {
+        acc[monthKey][entry.name] = 0;
       }
+      acc[monthKey][entry.name] += 1;
       return acc;
     }, {});
 
@@ -102,23 +98,23 @@ const Statistics = () => {
     const monthDatasets = [];
 
     monthNames.forEach((month, index) => {
-      const monthData = monthlyData[index] || {};
+      const monthData = monthlyData[year + "-" + String(index + 1).padStart(2, "0")] || {};
       const top3 = Object.entries(monthData)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 3);
 
-      top3.forEach(([name, count], i) => {
-        if (!monthDatasets[i]) {
-          monthDatasets[i] = {
-            label: `Top ${i + 1}`,
+      top3.forEach(([name, count], index) => {
+        if (!monthDatasets[index]) {
+          monthDatasets[index] = {
+            label: `Top ${index + 1}`,
             data: Array(monthNames.length).fill(0),
-            backgroundColor: `rgba(75, 192, 192, ${0.2 + i * 0.1})`,
+            backgroundColor: `rgba(75, 192, 192, ${0.2 + index * 0.1})`,
             borderColor: `rgba(75, 192, 192, 1)`,
             borderWidth: 1,
           };
         }
-        monthDatasets[i].data[monthLabels.indexOf(month)] = count;
-        monthDatasets[i].label = `${name} (${count}회)`;
+        monthDatasets[index].data[monthLabels.indexOf(month)] = count;
+        monthDatasets[index].label = `${name} (${count}회)`;
       });
     });
 
@@ -128,17 +124,16 @@ const Statistics = () => {
     });
 
     // 요일별 통계
-    const weekdayData = savedData.reduce((acc, entry) => {
+    const weekdayData = stats.reduce((acc, entry) => {
       const weekday = new Date(entry.date).getDay();
       const dayName = weekdayNames[(weekday + 6) % 7];
       if (!acc[dayName]) {
         acc[dayName] = {};
       }
-      if (acc[dayName][entry.name]) {
-        acc[dayName][entry.name] += 1;
-      } else {
-        acc[dayName][entry.name] = 1;
+      if (!acc[dayName][entry.name]) {
+        acc[dayName][entry.name] = 0;
       }
+      acc[dayName][entry.name] += 1;
       return acc;
     }, {});
 
@@ -190,7 +185,7 @@ const Statistics = () => {
       monthlyTitle: `${year}년 월별 선택 통계`,
       weekdayTitle: `요일별 선택 통계`,
     });
-  }, []);
+  }, [stats]);
 
   return (
     <Grid container spacing={2} direction="column">

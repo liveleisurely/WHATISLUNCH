@@ -12,52 +12,51 @@ const App = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [recommended, setRecommended] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [stats, setStats] = useState({ daily: {}, weekly: {}, monthly: {}, weekday: {} });
+  const [stats, setStats] = useState([]); // 통계 데이터를 관리하는 상태
 
+  // 레스토랑 데이터를 서버에서 가져오는 부분
   useEffect(() => {
-    axios.get('/restaurants.json')
+    axios.get('http://localhost:3001/restaurants')
       .then(response => {
-        const updatedRestaurants = response.data.restaurants.map(restaurant => ({
-          ...restaurant,
-          distance: `${restaurant.distance.toLocaleString()}m`
-        }));
-        setRestaurants(updatedRestaurants);
+        setRestaurants(response.data.data);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
       });
+      
   }, []);
 
+  // 선택된 레스토랑을 저장하는 함수
   const saveSelection = (restaurant) => {
-    const savedData = JSON.parse(localStorage.getItem('restaurantStats')) || [];
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1; // 0부터 시작하므로 +1
-    const weekNumber = Math.ceil(currentDate.getDate() / 7);
-    const date = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD 형식
-  
-    const newEntry = {
-      date: date,
-      name: restaurant.name,
-      month: `${year}-${month}`, // YYYY-MM 형식으로 월 저장
-      week: `${year}-${month}-${weekNumber}주차`, // YYYY-MM-주차 형식으로 주차 저장
-    };
-  
-    savedData.push(newEntry);
-    localStorage.setItem('restaurantStats', JSON.stringify(savedData));
-  };
-  
+    const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD 형식으로 저장
+    const newEntry = { name: restaurant[0], date: currentDate, month: currentDate.slice(0, 7) };
 
+    setStats(prevStats => [...prevStats, newEntry]); // 새로운 데이터를 stats에 추가
+    localStorage.setItem('restaurantStats', JSON.stringify([...stats, newEntry])); // localStorage에 저장
+  };
+
+  // 추천 레스토랑을 서버에서 가져오는 부분
   const recommendRestaurant = () => {
     setLoading(true);
-    setTimeout(() => {
-      const randomRestaurant = restaurants[Math.floor(Math.random() * restaurants.length)];
-      setRecommended(randomRestaurant);
-      saveSelection(randomRestaurant); // 선택된 레스토랑 저장
-      setLoading(false);
-    }, 3000); // 3초 지연
+    axios.get('http://localhost:3001/recommend')
+      .then(response => {
+        const randomRestaurant = response.data.data;
+        if (randomRestaurant) {
+            console.log('Received data:', randomRestaurant);  // 데이터를 콘솔에 출력해서 확인
+            setRecommended(randomRestaurant);
+            saveSelection(randomRestaurant); // 선택된 레스토랑 저장
+        } else {
+            console.error('No data received');
+        }
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      });
   };
 
+  // 새로운 레스토랑을 추가하는 함수
   const addRestaurant = (newRestaurant) => {
     const updatedRestaurant = {
       ...newRestaurant,
@@ -66,10 +65,10 @@ const App = () => {
     setRestaurants([...restaurants, updatedRestaurant]);
   };
 
-  // 데이터 리셋 함수 추가
+  // 저장된 통계 데이터를 리셋하는 함수
   const resetSavedData = () => {
-    localStorage.setItem('restaurantStats', JSON.stringify([]));
-    setStats([]);  // 상태도 초기화
+    setStats([]); // 통계 데이터를 초기화
+    localStorage.removeItem('restaurantStats'); // localStorage에서 데이터 삭제
   };
 
   return (
@@ -89,6 +88,9 @@ const App = () => {
               <Button variant="contained" color="primary" onClick={recommendRestaurant} style={{ marginBottom: '20px' }}>
                 오늘의 점심은?!
               </Button>
+              <Button variant="contained" color="secondary" onClick={resetSavedData} style={{ marginLeft: '20px', marginBottom: '20px' }}>
+                통계 리셋
+              </Button>
             </Box>
             {loading && (
               <Paper elevation={3} className="loading-container">
@@ -100,17 +102,18 @@ const App = () => {
             {recommended && !loading && (
               <Paper elevation={3} className="recommendation">
                 <Typography variant="h5" align="center" className="recommendation-name highlight">
-                  {recommended.name}
+                  {recommended[0]} {/* name */}
                 </Typography>
                 <Typography variant="body1" align="center" className="recommendation-menu">
-                  회사와의 거리: {recommended.distance}
+                  회사와의 거리: {recommended[1]}m {/* dist */}
                   <br />
-                  <strong>{recommended.menu}</strong>
+                  <strong style={{ fontSize: '18px' }}>{recommended[2]}</strong> {/* menu */}
                   <br />
-                  가격대: {recommended.price_range}
+                  가격대: {recommended[3]} {/* price_range */}
                 </Typography>
               </Paper>
             )}
+
             <Box style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
               <Button variant="contained" color="primary" component={Link} to="/add">
                 밥집 데이터 추가하기 (추후 구현)
@@ -120,15 +123,9 @@ const App = () => {
               </Button>
             </Box>
             <br></br>
-            <Statistics /> {/* 통계 컴포넌트를 추가 */}
-            <Box style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-              <Button variant="contained" color="secondary" onClick={resetSavedData}>
-                통계 데이터 리셋
-              </Button>
-            </Box>
+            <Statistics stats={stats} />
           </Container>
         } />
-
         <Route path="/add" element={<AddRestaurant addRestaurant={addRestaurant} />} />
         <Route path="/list" element={<RestaurantList restaurants={restaurants} />} />
       </Routes>

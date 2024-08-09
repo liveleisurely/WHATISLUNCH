@@ -1,7 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Grid } from '@mui/material';
+import axios from 'axios';
 
-const RestaurantList = ({ restaurants }) => {
+const RestaurantList = () => {
+  const [restaurants, setRestaurants] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:3001/restaurants')
+      .then(response => {
+        setRestaurants(response.data.data);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
   const categorizedRestaurants = {
     '한식': [],
     '일식': [],
@@ -12,7 +25,13 @@ const RestaurantList = ({ restaurants }) => {
   };
 
   restaurants.forEach(restaurant => {
-    categorizedRestaurants[restaurant.category].push(restaurant);
+    // Assume the 4th item in the restaurant array (index 3) is the category
+    categorizedRestaurants[restaurant[4]].push({
+      name: restaurant[0], // name
+      menu: restaurant[2], // menu
+      distance: restaurant[1], // distance
+      category: restaurant[4], // category
+    });
   });
 
   return (
@@ -28,7 +47,7 @@ const RestaurantList = ({ restaurants }) => {
                 <TableRow>
                   <TableCell align="center" style={{ fontWeight: 'bold' }}>가게명</TableCell>
                   <TableCell align="center" style={{ fontWeight: 'bold' }}>주요메뉴</TableCell>
-                  <TableCell align="center" style={{ fontWeight: 'bold' }}>거리</TableCell>
+                  <TableCell align="center" style={{ fontWeight: 'bold' }}>거리 (m)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
