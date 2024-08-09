@@ -23,5 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # private file
-Ontact_luch.xlsx
+Ontact_lunch.xlsx
 api_config.py
+
+*.csv

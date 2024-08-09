@@ -26,9 +26,9 @@ const RestaurantList = ({ restaurants }) => {
             <Table>
               <TableHead style={{ backgroundColor: '#e0f7fa' }}>
                 <TableRow>
-                  <TableCell align="center" style={{ fontWeight: 'bold' }}>가게이름</TableCell>
+                  <TableCell align="center" style={{ fontWeight: 'bold' }}>가게명</TableCell>
                   <TableCell align="center" style={{ fontWeight: 'bold' }}>주요메뉴</TableCell>
-                  <TableCell align="center" style={{ fontWeight: 'bold' }}>회사와의 거리</TableCell>
+                  <TableCell align="center" style={{ fontWeight: 'bold' }}>거리</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

@@ -4,7 +4,7 @@
             "name": "연어초밥",
             "menu": "초밥, 알밥",
             "category": "일식",
-            "price_range": "11000 ~ 15000원",
+            "price_range": "11000~15000원",
             "latitude": 37.5572679,
             "longitude": 126.9433882,
             "distance": "474"
@@ -13,281 +13,289 @@
             "name": "불밥",
             "menu": "(돼지고기,오징어,닭) 볶음 1인당 선택가능",
             "category": "한식",
-            "price_range": "10000원",
-            "latitude": 37.5572679,
-            "longitude": 126.9433882,
-            "distance": "474"
+            "price_range": "10000원~",
+            "latitude": 37.5588434,
+            "longitude": 126.9464048,
+            "distance": "156"
         },
         {
             "name": "빗갈",
             "menu": "육회비빔밥",
             "category": "한식",
             "price_range": "6000원~8000원",
-            "latitude": 37.5588434,
-            "longitude": 126.9464048,
-            "distance": "156"
+            "latitude": 37.55856240000001,
+            "longitude": 126.9384466,
+            "distance": "845"
         },
         {
             "name": "삭",
             "menu": "튀김, 떡볶이, 순대, 어묵",
             "category": "분식",
-            "price_range": "미상",
-            "latitude": 37.55856240000001,
-            "longitude": 126.9384466,
-            "distance": "845"
+            "price_range": "정보부족",
+            "latitude": 37.5580752,
+            "longitude": 126.9450861,
+            "distance": "299"
         },
         {
             "name": "김가네",
             "menu": "김밥, 라면, 우동 등",
             "category": "분식",
             "price_range": "5000원 ~ 10000원",
-            "latitude": 37.5580752,
-            "longitude": 126.9450861,
-            "distance": "299"
+            "latitude": 37.5588126,
+            "longitude": 126.943937,
+            "distance": "362"
         },
         {
             "name": "단풍나무",
             "menu": "뼈칼국수, 비빔칼국수",
             "category": "분식",
             "price_range": "8000원~1000원",
-            "latitude": 37.5588126,
-            "longitude": 126.943937,
-            "distance": "362"
+            "latitude": 37.53817670000001,
+            "longitude": 126.9516396,
+            "distance": "2395"
         },
         {
             "name": "카츠난반",
             "menu": "돈가스,덮밥,치킨난반 ",
             "category": "한식",
             "price_range": "9000원 ~ 14000원",
-            "latitude": 37.5565995,
-            "longitude": 126.9352199,
-            "distance": "1168"
+            "latitude": 37.5585318,
+            "longitude": 126.9436567,
+            "distance": "394"
         },
         {
             "name": "사장님돈까스",
             "menu": "돈까스,메밀",
             "category": "한식",
             "price_range": "11000원~15000원",
-            "latitude": 37.5585318,
-            "longitude": 126.9436567,
-            "distance": "394"
+            "latitude": 37.5586297,
+            "longitude": 126.9450548,
+            "distance": "274"
         },
         {
             "name": "가미",
             "menu": "닭칼국수(매운맛), 제육덮밥, 가미우동",
             "category": "한식",
             "price_range": "10000원~15000원",
-            "latitude": 37.5586297,
-            "longitude": 126.9450548,
-            "distance": "274"
+            "latitude": 37.5586501,
+            "longitude": 126.9459568,
+            "distance": "201"
         },
         {
             "name": "롯데리아 이대점",
             "menu": "햄버거",
             "category": "양식",
             "price_range": "6000원~",
-            "latitude": 37.5586501,
-            "longitude": 126.9459568,
-            "distance": "201"
+            "latitude": 37.5590676,
+            "longitude": 126.9450411,
+            "distance": "261"
         },
         {
             "name": "서브웨이 이대점",
             "menu": "샌드위치",
             "category": "양식",
             "price_range": "7000원~",
-            "latitude": 37.5590676,
-            "longitude": 126.9450411,
-            "distance": "261"
+            "latitude": 37.5584915,
+            "longitude": 126.945957,
+            "distance": "210"
         },
         {
             "name": "우리집",
             "menu": "제육볶음,순두부찌개,된장찌개",
             "category": "한식",
             "price_range": "8000원~",
-            "latitude": 37.5581439,
-            "longitude": 126.9450829,
-            "distance": "295"
+            "latitude": 37.5594348,
+            "longitude": 126.9445818,
+            "distance": "297"
         },
         {
             "name": "박가네",
             "menu": "고등어구이,순두부찌개,제육볶음",
             "category": "한식",
             "price_range": "8000원~ 10000원",
-            "latitude": 37.5572112,
-            "longitude": 126.9449584,
-            "distance": "368"
+            "latitude": 37.5581439,
+            "longitude": 126.9450829,
+            "distance": "295"
         },
         {
             "name": "까이식당",
             "menu": "싱가폴 치킨 라이스",
             "category": "기타",
-            "price_range": "미상",
-            "latitude": 37.5581439,
-            "longitude": 126.9450829,
-            "distance": "295"
-        },
-        {
-            "name": "고냉지김치찌개",
-            "menu": "김치찌개",
-            "category": "한식",
-            "price_range": "미상",
+            "price_range": "정보부족",
             "latitude": 37.5585356,
             "longitude": 126.9462533,
             "distance": "185"
         },
         {
-            "name": "훈카츠",
-            "menu": "일식돈가스, 멘츠카츠",
-            "category": "일식",
-            "price_range": "미상",
+            "name": "고냉지김치찌개",
+            "menu": "김치찌개",
+            "category": "한식",
+            "price_range": "정보부족",
             "latitude": 37.5585062,
             "longitude": 126.942208,
             "distance": "519"
         },
         {
-            "name": "청화원",
-            "menu": "가지덮밥",
-            "category": "한식",
-            "price_range": "미상",
+            "name": "훈카츠",
+            "menu": "일식돈가스, 멘츠카츠",
+            "category": "일식",
+            "price_range": "정보부족",
             "latitude": 37.557818,
             "longitude": 126.943572,
             "distance": "430"
         },
         {
-            "name": "한와담소반",
-            "menu": "곱계장",
+            "name": "청화원",
+            "menu": "가지덮밥이 최고",
             "category": "한식",
-            "price_range": "미상",
+            "price_range": "정보부족",
             "latitude": 37.5573851,
             "longitude": 126.9375438,
             "distance": "948"
         },
         {
-            "name": "정육면체",
-            "menu": "탄탄면",
+            "name": "한와담소반",
+            "menu": "정갈한 한식집인데, 곱계장이 맛남",
             "category": "한식",
-            "price_range": "미상",
+            "price_range": "정보부족",
             "latitude": 37.5561569,
             "longitude": 126.9358839,
             "distance": "1128"
         },
         {
-            "name": "가야라멘",
-            "menu": "일식 라면",
-            "category": "일식",
-            "price_range": "미상",
+            "name": "정육면체",
+            "menu": "탄탄면",
+            "category": "한식",
+            "price_range": "정보부족",
             "latitude": 37.5568287,
             "longitude": 126.9345923,
             "distance": "1215"
         },
-
         {
-            "name": "카츠난반",
-            "menu": "일식돈가스",
+            "name": "가야라멘 이대점",
+            "menu": "일식 라면",
             "category": "일식",
-            "price_range": "미상",
+            "price_range": "정보부족",
+            "latitude": 37.5581643,
+            "longitude": 126.9453703,
+            "distance": "273"
+        },
+        {
+            "name": "미분당 이대점",
+            "menu": "쌀국수",
+            "category": "기타",
+            "price_range": "정보부족",
             "latitude": 37.5565995,
             "longitude": 126.9352199,
             "distance": "1168"
         },
         {
-            "name": "한끼마끼",
-            "menu": "마끼",
-            "category": "한식",
-            "price_range": "미상",
+            "name": "카츠난반",
+            "menu": "일식돈가스",
+            "category": "일식",
+            "price_range": "정보부족",
             "latitude": 37.5585318,
             "longitude": 126.9436567,
             "distance": "394"
         },
         {
-            "name": "박가네",
-            "menu": "고등어구이",
+            "name": "한끼마끼",
+            "menu": "마끼",
             "category": "한식",
-            "price_range": "미상",
+            "price_range": "정보부족",
             "latitude": 37.5572112,
             "longitude": 126.9449584,
             "distance": "368"
         },
         {
-            "name": "우리집",
-            "menu": "제육",
+            "name": "박가네",
+            "menu": "고등어구이",
             "category": "한식",
-            "price_range": "미상",
+            "price_range": "정보부족",
             "latitude": 37.5581439,
             "longitude": 126.9450829,
             "distance": "295"
         },
         {
-            "name": "돼지궁둥이소풍가는날",
-            "menu": "부대찌개",
+            "name": "우리집",
+            "menu": "제육",
             "category": "한식",
-            "price_range": "미상",
+            "price_range": "정보부족",
             "latitude": 37.5594348,
             "longitude": 126.9445818,
             "distance": "297"
         },
         {
-            "name": "오사카우동",
-            "menu": "미상",
-            "category": "일식",
-            "price_range": "미상",
-            "latitude": 37.4814331,
-            "longitude": 126.948155,
-            "distance": "8682"
-        },
-        {
-            "name": "일등집",
-            "menu": "국밥",
+            "name": "돼지궁뎅이 소풍가는날",
+            "menu": "부대찌개",
             "category": "한식",
-            "price_range": "미상",
-            "latitude": 37.4814331,
-            "longitude": 126.948155,
-            "distance": "8682"
-        },
-        {
-            "name": "유소바",
-            "menu": "소바",
-            "category": "일식",
-            "price_range": "미상",
+            "price_range": "정보부족",
             "latitude": 37.5552343,
             "longitude": 126.9464349,
             "distance": "494"
         },
         {
-            "name": "모미지",
-            "menu": "기본 2메뉴(육회덮밥, 가지덮밥) + 변동메뉴",
+            "name": "일등집",
+            "menu": "국밥",
             "category": "한식",
-            "price_range": "미상",
+            "price_range": "정보부족",
+            "latitude": 37.5552343,
+            "longitude": 126.9464349,
+            "distance": "494"
+        },
+        {
+            "name": "유소바",
+            "menu": "소바",
+            "category": "일식",
+            "price_range": "정보부족",
             "latitude": 37.5572533,
             "longitude": 126.9461612,
             "distance": "297"
         },
         {
-            "name": "타이스토리",
-            "menu": "태국 음식, 돼지 쌀국수가 독특하고 맛났음",
-            "category": "기타",
-            "price_range": "미상",
+            "name": "모미지",
+            "menu": "기본 2메뉴(육회덮밥, 가지덮밥) + 변동메뉴",
+            "category": "한식",
+            "price_range": "정보부족",
             "latitude": 37.5588233,
             "longitude": 126.9442799,
             "distance": "333"
         },
         {
-            "name": "포가레",
-            "menu": "곱창쌀국수",
+            "name": "타이스토리 이대점",
+            "menu": "태국 음식, 돼지 쌀국수",
             "category": "기타",
-            "price_range": "미상",
+            "price_range": "정보부족",
+            "latitude": 37.5584594,
+            "longitude": 126.9455293,
+            "distance": "244"
+        },
+        {
+            "name": "방콕익스프레스 신촌본점",
+            "menu": "똠양쌀국수, 소고기숙주덮밥",
+            "category": "기타",
+            "price_range": "정보부족",
             "latitude": 37.5574861,
             "longitude": 126.9419248,
             "distance": "577"
         },
         {
-            "name": "천궁전마라탕",
-            "menu": "마라탕",
-            "category": "중식",
-            "price_range": "미상",
+            "name": "포가레",
+            "menu": "곱창쌀국수",
+            "category": "기타",
+            "price_range": "정보부족",
             "latitude": 37.5606715,
             "longitude": 126.9235849,
             "distance": "2152"
+        },
+        {
+            "name": "천궁전마라탕",
+            "menu": "마라탕",
+            "category": "중식",
+            "price_range": "정보부족",
+            "latitude": 37.55719810000001,
+            "longitude": 126.9361849,
+            "distance": "1069"
         }
     ]
 }
