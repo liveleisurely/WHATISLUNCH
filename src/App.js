@@ -12,6 +12,7 @@ const App = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [recommended, setRecommended] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({ daily: {}, weekly: {}, monthly: {}, weekday: {} });
 
   useEffect(() => {
     axios.get('/restaurants.json')
@@ -65,6 +66,12 @@ const App = () => {
     setRestaurants([...restaurants, updatedRestaurant]);
   };
 
+  // 데이터 리셋 함수 추가
+  const resetSavedData = () => {
+    localStorage.setItem('restaurantStats', JSON.stringify([]));
+    setStats([]);  // 상태도 초기화
+  };
+
   return (
     <Router>
       <Routes>
@@ -112,9 +119,16 @@ const App = () => {
                 맛집 리스트 보기
               </Button>
             </Box>
+            <br></br>
             <Statistics /> {/* 통계 컴포넌트를 추가 */}
+            <Box style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+              <Button variant="contained" color="secondary" onClick={resetSavedData}>
+                통계 데이터 리셋
+              </Button>
+            </Box>
           </Container>
         } />
+
         <Route path="/add" element={<AddRestaurant addRestaurant={addRestaurant} />} />
         <Route path="/list" element={<RestaurantList restaurants={restaurants} />} />
       </Routes>
