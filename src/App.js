@@ -41,16 +41,16 @@ const App = () => {
   }, []);
 
   // 선택된 레스토랑을 저장하는 함수
-  const saveSelection = (restaurant) => {
-    const currentDate = new Date().toISOString().split('T')[0];
-    const newEntry = { name: restaurant[0], date: currentDate, month: currentDate.slice(0, 7) };
-
-    setStats(prevStats => {
-      const updatedStats = [...prevStats, newEntry];
-      localStorage.setItem('restaurantStats', JSON.stringify(updatedStats));
-      return updatedStats;
+  const saveSelection = async (restaurant) => {
+    const ipResponse = await axios.get('https://api.ipify.org?format=json');
+    const userIp = ipResponse.data.ip;
+    await axios.post('http://10.10.52.39:3001/log_recommendation', {
+        user_ip: userIp,
+        restaurant: restaurant[0],
     });
+    setStats(stats => [...stats]); // 통계 갱신을 트리거하기 위해 상태 변경
   };
+  
 
   // 추천 레스토랑을 서버에서 가져오는 부분
   const recommendRestaurant = () => {
@@ -65,7 +65,7 @@ const App = () => {
             setRecommended(randomRestaurant);
             saveSelection(randomRestaurant); // 선택된 레스토랑 저장
             setLoading(false);
-          }, 500); // 0.5초 후에 로딩을 false로 설정
+          }, 500); // 2초 후에 로딩을 false로 설정
         } else {
           console.error('No data received');
           setLoading(false);
@@ -75,7 +75,7 @@ const App = () => {
         console.error('Error fetching data:', error);
         setLoading(false);
       });
-};
+  };
 
   // 새로운 레스토랑을 추가하는 함수
   const addRestaurant = (newRestaurant) => {
@@ -88,9 +88,26 @@ const App = () => {
 
   // 저장된 통계 데이터를 리셋하는 함수
   const resetSavedData = () => {
-    setStats([]); // 통계 데이터를 초기화
-    localStorage.removeItem('restaurantStats'); // localStorage에서 데이터 삭제
+    const adminApiKey = prompt("관리자 API 키를 입력하세요:");
+    
+    axios.delete(`http://10.10.52.39:3001/api/stats/reset?api_key=${adminApiKey}`)
+      .then(response => {
+        if (response.data.status === 'success') {
+          alert('통계가 초기화되었습니다.');
+          // 통계 리셋 후 데이터 다시 가져오기
+          axios.get('http://10.10.52.39:3001/api/stats/daily')
+            .then(response => setStats(response.data.data))
+            .catch(error => console.error('Error fetching stats:', error));
+        } else {
+          alert('통계 초기화에 실패했습니다.');
+        }
+      })
+      .catch(error => {
+        console.error('Error resetting stats:', error);
+        alert('통계 초기화에 실패했습니다.');
+      });
   };
+  
 
   return (
     <Router>

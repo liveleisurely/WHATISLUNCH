@@ -3,9 +3,11 @@ from fastapi import FastAPI, Request, HTTPException, Body
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
 import pymysql
 from typing import List
 import random
+from api_config import dataAPI
 
 app = FastAPI()
 
@@ -41,14 +43,56 @@ def insert(sql:List[str]):
         conn.rollback()
     finally:
         conn.close()
+        
 
-@app.get("/heartbeat")
-async def heartbeat():
-    return {
-        "status": "success",
-        "message": "hihi`",
-        "data": None
-    }
+def delete(sql: str):
+    conn = connect()
+    cur = conn.cursor()
+    
+    try:
+        cur.execute(sql)
+        conn.commit()
+    except Exception as e:
+        print(e)
+        conn.rollback()
+    finally:
+        conn.close()
+
+def authenticate_admin(api_key: str):
+    # 간단한 API 키로 인증
+    ADMIN_API_KEY = dataAPI  # 설정해 둔 API 키
+    if api_key != ADMIN_API_KEY:
+        raise HTTPException(status_code=403, detail="Unauthorized")
+
+@app.delete("/api/stats/reset")
+async def reset_stats(api_key: str):
+    authenticate_admin(api_key)
+    sql = "DELETE FROM recommend_log"
+    delete(sql)
+    return {"status": "success", "message": "All statistics have been reset"}
+
+
+
+@app.post("/log_recommendation")
+async def log_recommendation(request: Request):
+    data = await request.json()
+    print(f"Received data: {data}")  # 받은 데이터를 로그로 출력
+
+    conn = connect()
+    cur = conn.cursor()
+    sql = "INSERT INTO recommend_log (user_ip, restaurant, timestamp) VALUES (%s, %s, %s)"
+    try:
+        cur.execute(sql, (data['user_ip'], data['restaurant'], datetime.now()))
+        conn.commit()
+        print("Data committed successfully")  # 성공적으로 커밋되었는지 로그 출력
+    except Exception as e:
+        print(f"Error occurred: {e}")  # 오류 발생 시 오류 메시지를 출력
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+    
+    return {"status": "success", "message": "Log saved successfully"}
+
 
 @app.get("/select")
 async def select_all():
@@ -56,16 +100,6 @@ async def select_all():
     return {
         "status": "success",
         "data": data
-    }
-
-# API 엔드포인트
-@app.get("/api/health_categories")
-async def get_categories():
-    categories = [r[0] for r in select("select distinct 건강유형명 from 건강유형")]
-    return {
-        "status": "success",
-        "message": "",
-        "data": categories
     }
 
 @app.get("/restaurants")
@@ -83,6 +117,85 @@ async def recommend_restaurant():
         "status": "success",
         "data": picked[0] if picked else None
     }
+
+@app.get("/api/stats/daily")
+async def get_daily_stats():
+    sql = """
+    SELECT restaurant, COUNT(*) as count
+    FROM recommend_log
+    WHERE DATE(timestamp) = CURDATE()
+    GROUP BY restaurant
+    ORDER BY count DESC
+    """
+    results = select(sql)
+    return {"status": "success", "data": results}
+
+
+@app.get("/api/stats/weekly")
+async def get_weekly_stats():
+    sql = """
+        WITH Week_Calculation AS (
+            SELECT 
+                DATE_FORMAT(timestamp, '%Y-%m') as month_year,
+                WEEKOFYEAR(timestamp) - WEEKOFYEAR(DATE_SUB(timestamp, INTERVAL DAYOFMONTH(timestamp)-1 DAY)) + 1 AS week_of_month,
+                restaurant,
+                COUNT(*) as count
+            FROM recommend_log
+            WHERE timestamp >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+            GROUP BY month_year, week_of_month, restaurant
+            HAVING week_of_month <= 4
+        )
+        SELECT * FROM Week_Calculation
+        WHERE week_of_month <= 4
+        ORDER BY month_year, week_of_month, count DESC;
+    """
+    results = select(sql)
+    return {"status": "success", "data": results}
+
+
+@app.get("/api/stats/monthly")
+async def get_monthly_stats():
+    sql = """
+    SELECT MONTH(timestamp) as month, restaurant, COUNT(*) as count
+    FROM recommend_log
+    WHERE YEAR(timestamp) = YEAR(CURDATE())
+    GROUP BY month, restaurant
+    ORDER BY month, count DESC
+    """
+    results = select(sql)
+    return {"status": "success", "data": results}
+
+
+@app.get("/api/stats/weekday")
+async def get_weekday_stats():
+    sql = """
+    SELECT DAYOFWEEK(timestamp) as weekday, restaurant, COUNT(*) as count
+    FROM recommend_log
+    WHERE WEEKDAY(timestamp) BETWEEN 0 AND 4  -- 월요일부터 금요일
+    GROUP BY weekday, restaurant
+    ORDER BY weekday, count DESC
+    """
+    results = select(sql)
+    return {"status": "success", "data": results}
+
+# API 엔드포인트
+# @app.get("/api/health_categories")
+# async def get_categories():
+#     categories = [r[0] for r in select("select distinct 건강유형명 from 건강유형")]
+#     return {
+#         "status": "success",
+#         "message": "",
+#         "data": categories
+#     }
+
+# @app.get("/heartbeat")
+# async def heartbeat():
+#     return {
+#         "status": "success",
+#         "message": "hihi`",
+#         "data": None
+#     }
+
 
 # # HTML 렌더링 엔드포인트
 # @app.get("/health_categories", response_class=HTMLResponse)
