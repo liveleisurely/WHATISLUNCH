@@ -16,7 +16,7 @@ const App = () => {
 
   // 레스토랑 데이터를 서버에서 가져오는 부분
   useEffect(() => {
-    axios.get('http://localhost:3001/restaurants')
+    axios.get('http://10.10.52.39/:3001/restaurants')
       .then(response => {
         setRestaurants(response.data.data);
       })
@@ -38,23 +38,27 @@ const App = () => {
   // 추천 레스토랑을 서버에서 가져오는 부분
   const recommendRestaurant = () => {
     setLoading(true);
-    axios.get('http://localhost:3001/recommend')
+    axios.get('http://10.10.52.39:3001/recommend')
       .then(response => {
         const randomRestaurant = response.data.data;
         if (randomRestaurant) {
             console.log('Received data:', randomRestaurant);  // 데이터를 콘솔에 출력해서 확인
+          // 2초간 로딩 상태를 유지한 후 데이터 표시
+          setTimeout(() => {
             setRecommended(randomRestaurant);
             saveSelection(randomRestaurant); // 선택된 레스토랑 저장
+            setLoading(false);
+          }, 2000); // 2초 후에 로딩을 false로 설정
         } else {
-            console.error('No data received');
+          console.error('No data received');
+          setLoading(false);
         }
-        setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
         setLoading(false);
       });
-  };
+};
 
   // 새로운 레스토랑을 추가하는 함수
   const addRestaurant = (newRestaurant) => {

@@ -6,7 +6,7 @@ const RestaurantList = () => {
   const [restaurants, setRestaurants] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:3001/restaurants')
+    axios.get('http://10.10.52.39:3001/restaurants')
       .then(response => {
         setRestaurants(response.data.data);
       })
@@ -15,29 +15,24 @@ const RestaurantList = () => {
       });
   }, []);
 
-  const categorizedRestaurants = {
-    '한식': [],
-    '일식': [],
-    '중식': [],
-    '양식': [],
-    '분식': [],
-    '기타': []
-  };
-
+  // 데이터를 카테고리별로 분류하는 로직
+  const categorizedRestaurants = {};
   restaurants.forEach(restaurant => {
-    // Assume the 4th item in the restaurant array (index 3) is the category
-    categorizedRestaurants[restaurant[4]].push({
-      name: restaurant[0], // name
-      menu: restaurant[2], // menu
-      distance: restaurant[1], // distance
-      category: restaurant[4], // category
+    const category = restaurant[4]; // 카테고리 정보는 배열의 5번째 원소(인덱스 4)
+    if (!categorizedRestaurants[category]) {
+      categorizedRestaurants[category] = [];
+    }
+    categorizedRestaurants[category].push({
+      name: restaurant[0], // 가게명
+      menu: restaurant[2], // 메뉴
+      distance: `${restaurant[1]}m` // 거리
     });
   });
 
   return (
     <Grid container spacing={3} style={{ marginTop: '40px' }}>
       {Object.keys(categorizedRestaurants).map(category => (
-        <Grid item xs={12} sm={6} key={category} style={{ marginBottom: '40px' }}>
+        <Grid item xs={12} sm={6} key={category}>
           <Typography variant="h5" align="center" gutterBottom style={{ fontWeight: 'bold' }}>
             {category}
           </Typography>
@@ -47,7 +42,7 @@ const RestaurantList = () => {
                 <TableRow>
                   <TableCell align="center" style={{ fontWeight: 'bold' }}>가게명</TableCell>
                   <TableCell align="center" style={{ fontWeight: 'bold' }}>주요메뉴</TableCell>
-                  <TableCell align="center" style={{ fontWeight: 'bold' }}>거리 (m)</TableCell>
+                  <TableCell align="center" style={{ fontWeight: 'bold' }}>거리</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

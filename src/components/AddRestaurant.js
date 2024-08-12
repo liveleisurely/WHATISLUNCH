@@ -30,7 +30,7 @@ const AddRestaurant = ({ addRestaurant }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/add_restaurant', formData);
+      const response = await axios.post('http://10.10.52.39:5000/add_restaurant', formData);
       addRestaurant(response.data);
       setFormData({ name: '', menu: '', address: '', category: '기타' });
     } catch (error) {
@@ -53,7 +53,7 @@ const AddRestaurant = ({ addRestaurant }) => {
         category: category || '기타'
       };
       try {
-        await axios.post('http://localhost:5000/add_restaurant', newRestaurant);
+        await axios.post('http://10.10.52.39:5000/add_restaurant', newRestaurant);
       } catch (error) {
         console.error('Error adding restaurant from file:', error);
       }
@@ -123,7 +123,7 @@ const AddRestaurant = ({ addRestaurant }) => {
         multiple={false}
         onDone={handleFileUpload}
       />
-      <Button variant="contained" color="primary" href="http://localhost:5000/download_template" download>
+      <Button variant="contained" color="primary" href="http://10.10.52.39:5000/download_template" download>
         엑셀 템플릿 다운로드
       </Button>
     </Container>
