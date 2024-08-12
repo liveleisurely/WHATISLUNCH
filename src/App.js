@@ -16,23 +16,40 @@ const App = () => {
 
   // 레스토랑 데이터를 서버에서 가져오는 부분
   useEffect(() => {
-    axios.get('http://10.10.52.39/:3001/restaurants')
+    axios.get('http://10.10.52.39:3001/restaurants')
       .then(response => {
         setRestaurants(response.data.data);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
       });
-      
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+      alert("감히 우클릭을 할 수가 없음을 양해 바랍니다.");
+    };
+    document.addEventListener('contextmenu', handleContextMenu);
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+
+    const loadedStats = localStorage.getItem('restaurantStats');
+    if (loadedStats) {
+      setStats(JSON.parse(loadedStats));
+    }
+    };
+  
+
   }, []);
 
   // 선택된 레스토랑을 저장하는 함수
   const saveSelection = (restaurant) => {
-    const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD 형식으로 저장
+    const currentDate = new Date().toISOString().split('T')[0];
     const newEntry = { name: restaurant[0], date: currentDate, month: currentDate.slice(0, 7) };
 
-    setStats(prevStats => [...prevStats, newEntry]); // 새로운 데이터를 stats에 추가
-    localStorage.setItem('restaurantStats', JSON.stringify([...stats, newEntry])); // localStorage에 저장
+    setStats(prevStats => {
+      const updatedStats = [...prevStats, newEntry];
+      localStorage.setItem('restaurantStats', JSON.stringify(updatedStats));
+      return updatedStats;
+    });
   };
 
   // 추천 레스토랑을 서버에서 가져오는 부분
@@ -48,7 +65,7 @@ const App = () => {
             setRecommended(randomRestaurant);
             saveSelection(randomRestaurant); // 선택된 레스토랑 저장
             setLoading(false);
-          }, 2000); // 2초 후에 로딩을 false로 설정
+          }, 500); // 0.5초 후에 로딩을 false로 설정
         } else {
           console.error('No data received');
           setLoading(false);

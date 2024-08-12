@@ -70,7 +70,7 @@ async def get_categories():
 
 @app.get("/restaurants")
 async def get_restaurants():
-    data = select("SELECT name, dist, menu, price_range,category, FROM restaurants;")
+    data = select("SELECT name, dist, menu, price_range,category FROM restaurants;")
     return {
         "status": "success",
         "data": data
@@ -78,7 +78,7 @@ async def get_restaurants():
 
 @app.get("/recommend")
 async def recommend_restaurant():
-    picked = select("select name, dist, menu, price_range FROM restaurants ORDER BY RAND() LIMIT 1;")
+    picked = select("select name, dist, menu, price_range, category, scores, etc FROM restaurants ORDER BY RAND() LIMIT 1;")
     return {
         "status": "success",
         "data": picked[0] if picked else None
