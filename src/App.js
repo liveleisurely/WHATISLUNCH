@@ -12,9 +12,10 @@ const App = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [recommended, setRecommended] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [stats, setStats] = useState([]); // 통계 데이터를 관리하는 상태
+  const [stats, setStats] = useState([]);
+  const [advancedPrompt, setAdvancedPrompt] = useState(''); // 고급 추천 프롬프트 상태 추가
+  const [advancedRecommended, setAdvancedRecommended] = useState(null); // 고급 추천 결과 상태 추가
 
-  // 레스토랑 데이터를 서버에서 가져오는 부분
   useEffect(() => {
     axios.get('http://10.10.52.39:3001/restaurants')
       .then(response => {
@@ -30,42 +31,30 @@ const App = () => {
     document.addEventListener('contextmenu', handleContextMenu);
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu);
-
-    const loadedStats = localStorage.getItem('restaurantStats');
-    if (loadedStats) {
-      setStats(JSON.parse(loadedStats));
-    }
     };
-  
-
   }, []);
 
-  // 선택된 레스토랑을 저장하는 함수
   const saveSelection = async (restaurant) => {
     const ipResponse = await axios.get('https://api.ipify.org?format=json');
     const userIp = ipResponse.data.ip;
     await axios.post('http://10.10.52.39:3001/log_recommendation', {
-        user_ip: userIp,
-        restaurant: restaurant[0],
+      user_ip: userIp,
+      restaurant: restaurant[0],
     });
-    setStats(stats => [...stats]); // 통계 갱신을 트리거하기 위해 상태 변경
+    setStats(stats => [...stats]);
   };
-  
 
-  // 추천 레스토랑을 서버에서 가져오는 부분
   const recommendRestaurant = () => {
     setLoading(true);
     axios.get('http://10.10.52.39:3001/recommend')
       .then(response => {
         const randomRestaurant = response.data.data;
         if (randomRestaurant) {
-            console.log('Received data:', randomRestaurant);  // 데이터를 콘솔에 출력해서 확인
-          // 2초간 로딩 상태를 유지한 후 데이터 표시
           setTimeout(() => {
             setRecommended(randomRestaurant);
-            saveSelection(randomRestaurant); // 선택된 레스토랑 저장
+            saveSelection(randomRestaurant);
             setLoading(false);
-          }, 500); // 2초 후에 로딩을 false로 설정
+          }, 500);
         } else {
           console.error('No data received');
           setLoading(false);
@@ -77,7 +66,28 @@ const App = () => {
       });
   };
 
-  // 새로운 레스토랑을 추가하는 함수
+  const recommendAdvancedRestaurant = () => {
+    setLoading(true);
+    axios.post('http://10.10.52.39:3001/recommend/advanced', { prompt: advancedPrompt })
+      .then(response => {
+        const advancedRestaurant = response.data.data;
+        if (advancedRestaurant) {
+          setTimeout(() => {
+            setAdvancedRecommended(advancedRestaurant);
+            setLoading(false);
+          }, 500);
+        } else {
+          console.error('No data received');
+          setLoading(false);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      });
+  };
+  
+
   const addRestaurant = (newRestaurant) => {
     const updatedRestaurant = {
       ...newRestaurant,
@@ -86,15 +96,12 @@ const App = () => {
     setRestaurants([...restaurants, updatedRestaurant]);
   };
 
-  // 저장된 통계 데이터를 리셋하는 함수
   const resetSavedData = () => {
     const adminApiKey = prompt("관리자 API 키를 입력하세요:");
-    
     axios.delete(`http://10.10.52.39:3001/api/stats/reset?api_key=${adminApiKey}`)
       .then(response => {
         if (response.data.status === 'success') {
           alert('통계가 초기화되었습니다.');
-          // 통계 리셋 후 데이터 다시 가져오기
           axios.get('http://10.10.52.39:3001/api/stats/daily')
             .then(response => setStats(response.data.data))
             .catch(error => console.error('Error fetching stats:', error));
@@ -107,7 +114,6 @@ const App = () => {
         alert('통계 초기화에 실패했습니다.');
       });
   };
-  
 
   return (
     <Router>
@@ -152,9 +158,29 @@ const App = () => {
               </Paper>
             )}
 
+            <Box style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+              <Button variant="contained" color="primary" onClick={recommendAdvancedRestaurant} style={{ marginBottom: '20px' }}>
+                오늘의 점심은? (고급)
+              </Button>
+              <input 
+                type="text" 
+                value={advancedPrompt} 
+                onChange={(e) => setAdvancedPrompt(e.target.value)} 
+                placeholder="원하는 메뉴나 조건을 입력하세요" 
+                style={{ marginLeft: '20px', padding: '10px', flex: 1 }} 
+              />
+            </Box>
+            {advancedRecommended && !loading && (
+              <Paper elevation={3} className="recommendation">
+                <Typography variant="h5" align="center" className="recommendation-name highlight">
+                  {advancedRecommended}
+                </Typography>
+              </Paper>
+            )}
+
             <Box style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
               <Button variant="contained" color="primary" component={Link} to="/add">
-                밥집 데이터 추가하기 (추후 구현)
+                밥집 데이터 추가하기
               </Button>
               <Button variant="contained" color="secondary" component={Link} to="/list" style={{ marginLeft: '20px' }}>
                 맛집 리스트 보기

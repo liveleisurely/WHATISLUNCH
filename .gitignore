@@ -25,5 +25,7 @@ yarn-error.log*
 # private file
 Ontact_lunch.xlsx
 api_config.py
+main_backup.py
+
 
 *.csv
