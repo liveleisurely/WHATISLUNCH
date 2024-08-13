@@ -1,27 +1,25 @@
-import React, { useState, useEffect, useCallback, useMemo, createContext, useContext } from 'react';
+import React, { useState, useEffect, useCallback, createContext, useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import { Container, Typography, Button, Box, Grid, TextField, Paper } from '@mui/material';
+import { Container, Typography, Button, Box, Grid, TextField, Paper, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import axios from 'axios';
 import AddRestaurant from './components/AddRestaurant';
 import RestaurantList from './components/RestaurantList';
 import DailyStatistics from './components/DailyStatistics'; 
 import WeeklyStatistics from './components/WeeklyStatistics';
 import MonthlyStatistics from './components/MonthlyStatistics';
-import WeekdayStatistics from './components/WeekdayStatistics'; 
+import WeekdayStatistics from './components/WeekdayStatistics';
+import GPTChat from './components/GPTChat';  // GPTChat 컴포넌트 임포트
 import './App.css';
 import logo from './logo.svg';
 import lunchImage from './mukbang.jfif';
 import lunchImage2 from './mukbang2.jfif';
 
-// Context 생성
-export const StatsContext = createContext(); // export 추가
+export const StatsContext = createContext();
 
-// Custom Hook for using stats
-export const useStats = () => { // export 추가
+export const useStats = () => {
   return useContext(StatsContext);
 };
 
-// Context Provider
 const StatsProvider = ({ children }) => {
   const [stats, setStats] = useState({
     daily: [],
@@ -51,9 +49,9 @@ const StatsProvider = ({ children }) => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchStats();
-    }, 5000); // 5초마다 통계 데이터를 갱신
+    }, 5000);
   
-    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 제거
+    return () => clearInterval(intervalId);
   }, [fetchStats]);
 
   return (
@@ -66,8 +64,10 @@ const StatsProvider = ({ children }) => {
 const App = () => {
   const [recommended, setRecommended] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [advancedPrompt, setAdvancedPrompt] = useState(''); 
+  const [advancedPrompt, setAdvancedPrompt] = useState('');
   const [advancedRecommended, setAdvancedRecommended] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [adminApiKey, setAdminApiKey] = useState('');
 
   const saveSelection = useCallback(async (restaurant) => {
     try {
@@ -80,8 +80,7 @@ const App = () => {
       });
     } catch (error) {
       console.error('Error saving selection:', error);
-      // 에러 발생 시 재시도 로직 추가
-      setTimeout(() => saveSelection(restaurant), 3000); // 3초 후에 재시도
+      setTimeout(() => saveSelection(restaurant), 3000);
     }
   }, []);
 
@@ -111,12 +110,11 @@ const App = () => {
     setLoading(true);
     axios.post('http://10.10.52.39:3001/recommend/advanced', { prompt: advancedPrompt })
       .then(response => {
-        console.log(response.data)
         const advancedRestaurant = response.data.data;
         if (advancedRestaurant) {
           setTimeout(() => {
-            setAdvancedRecommended(advancedRestaurant); // 응답을 advancedRecommended에 저장
-            setRecommended(null); // 기본 추천 결과를 초기화
+            setAdvancedRecommended(advancedRestaurant);
+            setRecommended(null);
             setLoading(false);
           }, 500);
         } else {
@@ -131,7 +129,6 @@ const App = () => {
   }, [advancedPrompt]);
 
   const resetSavedData = useCallback(() => {
-    const adminApiKey = prompt("관리자 API 키를 입력하세요:");
     axios.delete(`http://10.10.52.39:3001/api/stats/reset?api_key=${adminApiKey}`)
       .then(response => {
         if (response.data.status === 'success') {
@@ -143,8 +140,39 @@ const App = () => {
       .catch(error => {
         console.error('Error resetting stats:', error);
         alert('통계 초기화에 실패했습니다.');
+      })
+      .finally(() => {
+        setOpenDialog(false);  // 다이얼로그 닫기
+        setAdminApiKey('');    // API 키 초기화
       });
-  }, []);
+  }, [adminApiKey]);
+
+  const resetTodayData = useCallback(() => {
+    axios.delete(`http://10.10.52.39:3001/api/stats/reset/today?api_key=${adminApiKey}`)
+      .then(response => {
+        if (response.data.status === 'success') {
+          alert('오늘 날짜의 통계가 초기화되었습니다.');
+        } else {
+          alert('통계 초기화에 실패했습니다.');
+        }
+      })
+      .catch(error => {
+        console.error('Error resetting today\'s stats:', error);
+        alert('오늘 날짜의 통계 초기화에 실패했습니다.');
+      })
+      .finally(() => {
+        setOpenDialog(false);  // 다이얼로그 닫기
+        setAdminApiKey('');    // API 키 초기화
+      });
+  }, [adminApiKey]);
+
+  const handleOpenDialog = (action) => {
+    setOpenDialog(action);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
 
   return (
     <StatsProvider>
@@ -152,21 +180,21 @@ const App = () => {
         <Routes>
           <Route exact path="/" element={
             <Container 
-            maxWidth="xxl" 
-            className="main-container" 
-            sx={{ 
-              padding: '20px', 
-              borderRadius: '8px', 
-              minHeight: '100vh', 
-              display: 'flex', 
-              flexDirection: 'column',
-              justifyContent: 'center', 
-              alignItems: 'center' 
-            }}
-          >
-              <Grid container spacing={1} >
+              maxWidth="xxl" 
+              className="main-container" 
+              sx={{ 
+                padding: '20px', 
+                borderRadius: '8px', 
+                minHeight: '100vh', 
+                display: 'flex', 
+                flexDirection: 'column',
+                justifyContent: 'center', 
+                alignItems: 'center' 
+              }}
+            >
+              <Grid container spacing={1}>
                 <Grid item xs={12} md={5}>
-                  <Box className="left-panel" sx={{ textAlign: 'center', padding: '10px', position: { md: 'fixed' }, width: { xs: '100%', sm: '80%', md: '30%' } , ml: { md: 10}}}>
+                  <Box className="left-panel" sx={{ textAlign: 'center', padding: '10px', position: { md: 'fixed' }, width: { xs: '100%', sm: '80%', md: '30%' }, ml: { md: 10 } }}>
                     <img src={logo} alt="로고" className="logo" style={{ maxWidth: '70%', marginBottom: '10px' }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <img src={lunchImage} alt="What is lunch?" style={{ width: '55%', height: '200px', marginBottom: '10px' }} />
@@ -177,22 +205,9 @@ const App = () => {
                     </Typography>
                     <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', gap: '10px' }}>
                       <Button variant="contained" color="primary" onClick={recommendRestaurant} style={{ width: '250px' }}>
-                        오늘의 점심은?<br></br>
-                        랜덤뽑기!
-                      </Button>
-                      <Button variant="contained" color="secondary" onClick={recommendAdvancedRestaurant} style={{ width: '250px' }}>
-                        조건부<br></br>
-                        오늘의 점심은?!
+                        오늘의 점심은? 랜덤뽑기!
                       </Button>
                     </Box>
-
-                    <TextField 
-                      value={advancedPrompt} 
-                      onChange={(e) => setAdvancedPrompt(e.target.value)} 
-                      placeholder="원하는 메뉴나 조건을 입력하세요" 
-                      fullWidth 
-                      style={{ marginBottom: '20px' }}
-                    />
 
                     <Paper elevation={3} className="recommendation" style={{ padding: '10px', minHeight: '100px' }}>
                       {loading ? (
@@ -204,19 +219,17 @@ const App = () => {
                           {recommended ? (
                             <>
                               <Typography variant="h5" align="center" className="recommendation-name highlight">
-                                {recommended[0]} {/* 일반 추천 결과: 가게 이름 */}
+                                {recommended[0]}
                               </Typography>
                               <Typography variant="body1" align="center" className="recommendation-menu">
-                                회사와의 거리: {recommended[1]}m {/* 거리 */}
-                                <br />
-                                <strong style={{ fontSize: '18px' }}>{recommended[2]}</strong> {/* 메뉴 */}
-                                <br />
-                                가격대: {recommended[3]} {/* 가격대 */}
+                                회사와의 거리: {recommended[1]}m <br />
+                                <strong style={{ fontSize: '18px' }}>{recommended[2]}</strong> <br />
+                                가격대: {recommended[3]}
                               </Typography>
                             </>
                           ) : advancedRecommended ? (
                             <Typography variant="h5" align="center" className="recommendation-name highlight">
-                              {advancedRecommended} {/* 고급 추천 결과 텍스트 그대로 표시 */}
+                              {advancedRecommended}
                             </Typography>
                           ) : (
                             <Typography variant="h6" align="center" color="textSecondary">
@@ -226,27 +239,31 @@ const App = () => {
                         </>
                       )}
                     </Paper>
+
+                    {/* GPT 채팅창 추가 */}
+                    <GPTChat />
+
                   </Box>
                 </Grid>
                 <Grid item xs={12} md={7} style={{ overflowY: 'auto', height: '150vh', marginLeft: 'auto' }}>
-                  <Box className="right-panel" sx={{ width: { xs: '100%', md: '55%' }, position: { md: 'fixed' }, marginTop: { xs: '20px', md: '0' }}}>
+                  <Box className="right-panel" sx={{ width: { xs: '100%', md: '55%' }, position: { md: 'fixed' }, marginTop: { xs: '20px', md: '0' } }}>
                     <Grid container spacing={3}>
-                      <Grid item xs={12} md={6} >
+                      <Grid item xs={12} md={6}>
                         <Paper style={{ padding: '2px' }}>
                           <DailyStatistics />
                         </Paper>
                       </Grid>
-                      <Grid item xs={12} md={6} >
+                      <Grid item xs={12} md={6}>
                         <Paper style={{ padding: '2px' }}>
                           <WeeklyStatistics />
                         </Paper>
                       </Grid>
-                      <Grid item xs={12} md={6} >
+                      <Grid item xs={12} md={6}>
                         <Paper style={{ padding: '2px' }}>
                           <MonthlyStatistics />
                         </Paper>
                       </Grid>
-                      <Grid item xs={12} md={6} >
+                      <Grid item xs={12} md={6}>
                         <Paper style={{ padding: '2px' }}>
                           <WeekdayStatistics />
                         </Paper>
@@ -263,8 +280,13 @@ const App = () => {
                           </Button>
                         </Grid>
                         <Grid item style={{ width: '100%', maxWidth: '200px' }}>
-                          <Button variant="contained" color="secondary" onClick={resetSavedData} style={{ width: '100%' }}>
-                            통계 리셋
+                          <Button variant="contained" color="secondary" onClick={() => handleOpenDialog('today')} style={{ width: '100%' }}>
+                            오늘 통계 리셋
+                          </Button>
+                        </Grid>
+                        <Grid item style={{ width: '100%', maxWidth: '200px' }}>
+                            <Button variant="contained" color="secondary" onClick={() => handleOpenDialog('all')} style={{ width: '100%' }}>
+                            전체 통계 리셋
                           </Button>
                         </Grid>
                       </Grid>
@@ -272,6 +294,38 @@ const App = () => {
                   </Box>
                 </Grid>
               </Grid>
+              {/* 관리자 API 키 입력 Dialog */}
+              <Dialog open={openDialog !== false} onClose={handleCloseDialog}>
+                <DialogTitle>관리자 API 키 입력</DialogTitle>
+                <DialogContent>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    label="API 키"
+                    type="password"
+                    fullWidth
+                    value={adminApiKey}
+                    onChange={(e) => setAdminApiKey(e.target.value)}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCloseDialog} color="primary">
+                    취소
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      if (openDialog === 'today') {
+                        resetTodayData();
+                      } else {
+                        resetSavedData();
+                      }
+                    }}
+                    color="primary"
+                  >
+                    확인
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </Container>
           } />
           <Route path="/list" element={<RestaurantList />} />

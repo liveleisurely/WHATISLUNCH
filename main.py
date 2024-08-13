@@ -78,7 +78,9 @@ def generate_gpt_response(prompt, restaurant_dict):
     full_prompt = f"""
     Consider the following restaurants:
     {formatted_restaurants}
-    Based on the user's request: '{prompt}', recommend the best restaurant. YOU SHOULD FLLOW THIS RULE: ANSWER LIKE THIS: "restaurant(menu, distance, price_range) and some reasons in your response".
+    Based on the user's request: '{prompt}', You're purpose is only to recommend the best restaurant.
+    ANSWER LIKE THIS: "restaurant(menu, distance, price_range) and some reasons in your response in Korea within 70 words.
+    ".
     """
     
     try:
@@ -91,8 +93,10 @@ def generate_gpt_response(prompt, restaurant_dict):
                  "content": 
                 """
                  You are an AI assistant who recommends restaurants.
-                 Always include the price information when asked and say in Korean within 70 words.
-                 Simply answer.
+                 YOU SHOULD ANSWER WITH THIS FORMAT: 
+                 "restaurant(menu, distance, price_range)
+                 reasons: "___"
+                 From DB, call the information of restaurant and Fill ___ with recommendation reason.
                  Please provide a clear answer without repeating the question.
                  """},
                 {"role": "user", "content": full_prompt}
@@ -119,7 +123,21 @@ async def reset_stats(api_key: str):
     delete(sql)
     return {"status": "success", "message": "All statistics have been reset"}
 
-
+# 특정 날짜 데이터 리셋 엔드포인트
+@app.delete("/api/stats/reset/today")
+async def reset_today_stats(api_key: str):
+    authenticate_admin(api_key)  # API 키로 인증 (이미 존재하는 함수 사용)
+    
+    # 오늘 날짜 구하기
+    today_date = datetime.now().strftime("%Y-%m-%d")
+    
+    # 오늘 날짜의 데이터만 삭제하는 SQL 쿼리
+    sql = f"DELETE FROM recommend_log WHERE DATE(timestamp) = '{today_date}'"
+    
+    # SQL 쿼리 실행
+    delete(sql)
+    
+    return {"status": "success", "message": "Today's statistics have been reset"}
 
 @app.post("/log_recommendation")
 async def log_recommendation(request: Request):
