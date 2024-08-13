@@ -51,7 +51,7 @@ const StatsProvider = ({ children }) => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchStats();
-    }, 500); // 0.5초마다 통계 데이터를 갱신
+    }, 5000); // 5초마다 통계 데이터를 갱신
   
     return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 제거
   }, [fetchStats]);
@@ -104,6 +104,7 @@ const App = () => {
     setLoading(true);
     axios.post('http://10.10.52.39:3001/recommend/advanced', { prompt: advancedPrompt })
       .then(response => {
+        console.log(response.data)
         const advancedRestaurant = response.data.data;
         if (advancedRestaurant) {
           setTimeout(() => {

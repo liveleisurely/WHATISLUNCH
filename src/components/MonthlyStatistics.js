@@ -14,7 +14,7 @@ const MonthlyStatistics = () => {
   const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
   const day = String(today.getDate()).padStart(2, '0');
 
-  const title = `${year}년 ${month}월 선택 통계`;
+  const title = `${year}년 ${month}월 추천 통계`;
 
   const { monthly } = useStats();
   const { labels, datasets } = processMonthlyData(monthly);

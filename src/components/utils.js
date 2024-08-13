@@ -1,14 +1,19 @@
-export const processDailyData = (dailyData) => ({
-    labels: dailyData.map(item => item[0]), // 레스토랑 이름
+export const processDailyData = (dailyData) => {
+  // 상위 5개 항목만 선택
+  const top5Data = dailyData.slice(0, 5);
+
+  return {
+    labels: top5Data.map(item => item[0]), // 레스토랑 이름
     datasets: [{
       label: '일별 선택 횟수',
-      data: dailyData.map(item => item[1]), // 선택 횟수
+      data: top5Data.map(item => item[1]), // 선택 횟수
       backgroundColor: 'rgba(255, 99, 132, 0.2)',
       borderColor: 'rgba(255, 99, 132, 1)',
       borderWidth: 1,
     }]
-  });
-  
+  };
+};
+
   export const processMonthlyData = (monthlyData) => {
     const months = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
     const datasets = [];

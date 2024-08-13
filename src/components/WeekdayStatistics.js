@@ -15,7 +15,7 @@ const WeekdayStatistics = () => {
 
   const { weekday } = useStats();
   const { labels, datasets } = processWeekdayData(weekday);
-  return <StatsChart title="요일별 선택 통계" labels={labels} datasets={datasets} indexAxis="y" />;
+  return <StatsChart title="요일별 추천 통계 Top3" labels={labels} datasets={datasets} indexAxis="y" />;
 };
 
 export default WeekdayStatistics;

@@ -17,7 +17,7 @@ const DailyStatistics = () => {
   const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
   const day = String(today.getDate()).padStart(2, '0');
 
-  const title = `${year}년 ${month}월 ${day}일 선택 통계`;
+  const title = `${year}년 ${month}월 ${day}일 추천 통계 Top5`;
 
   return <StatsChart title={title} labels={labels} datasets={datasets} />;
 };
