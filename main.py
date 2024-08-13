@@ -78,8 +78,7 @@ def generate_gpt_response(prompt, restaurant_dict):
     full_prompt = f"""
     Consider the following restaurants:
     {formatted_restaurants}
-    
-    Based on the user's request: '{prompt}', recommend the best restaurant. Please answer such that the name(menu, distance, price_range) and some reasons in your response.
+    Based on the user's request: '{prompt}', recommend the best restaurant. YOU SHOULD FLLOW THIS RULE: ANSWER LIKE THIS: "restaurant(menu, distance, price_range) and some reasons in your response".
     """
     
     try:

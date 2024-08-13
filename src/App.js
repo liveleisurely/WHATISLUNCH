@@ -228,25 +228,25 @@ const App = () => {
                     </Paper>
                   </Box>
                 </Grid>
-                <Grid item xs={7} style={{ overflowY: 'auto', height: '150vh', marginLeft: 'auto' }}>
-                  <Box className="right-panel" sx={{ width: '55%', position: { md: 'fixed' } }}>
+                <Grid item xs={12} md={7} style={{ overflowY: 'auto', height: '150vh', marginLeft: 'auto' }}>
+                  <Box className="right-panel" sx={{ width: { xs: '100%', md: '55%' }, position: { md: 'fixed' }, marginTop: { xs: '20px', md: '0' }}}>
                     <Grid container spacing={3}>
-                      <Grid item xs={6} >
+                      <Grid item xs={12} md={6} >
                         <Paper style={{ padding: '2px' }}>
                           <DailyStatistics />
                         </Paper>
                       </Grid>
-                      <Grid item xs={6} >
+                      <Grid item xs={12} md={6} >
                         <Paper style={{ padding: '2px' }}>
                           <WeeklyStatistics />
                         </Paper>
                       </Grid>
-                      <Grid item xs={6} >
+                      <Grid item xs={12} md={6} >
                         <Paper style={{ padding: '2px' }}>
                           <MonthlyStatistics />
                         </Paper>
                       </Grid>
-                      <Grid item xs={6} >
+                      <Grid item xs={12} md={6} >
                         <Paper style={{ padding: '2px' }}>
                           <WeekdayStatistics />
                         </Paper>
