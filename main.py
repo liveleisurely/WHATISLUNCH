@@ -243,7 +243,7 @@ async def get_weekday_stats():
 
 if __name__ == "__main__":
     uvicorn.run("main:app"
-                ,host="0.0.0.0" # 배포 실행
-                #,host="127.0.0.1" # 나만보기
+                #,host="0.0.0.0" # 배포 실행
+                ,host="127.0.0.1" # 나만보기
                 , port=3001
                 , reload=True)
