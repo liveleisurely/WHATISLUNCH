@@ -70,12 +70,19 @@ const App = () => {
   const [advancedRecommended, setAdvancedRecommended] = useState(null);
 
   const saveSelection = useCallback(async (restaurant) => {
-    const ipResponse = await axios.get('https://api.ipify.org?format=json');
-    const userIp = ipResponse.data.ip;
-    await axios.post('http://10.10.52.39:3001/log_recommendation', {
-      user_ip: userIp,
-      restaurant: restaurant[0],
-    });
+    try {
+      const ipResponse = await axios.get('https://api.ipify.org?format=json');
+      const userIp = ipResponse.data.ip;
+      await axios.post('http://10.10.52.39:3001/log_recommendation', {
+        user_ip: userIp,
+        restaurant: restaurant[0],
+        timeout: 3000
+      });
+    } catch (error) {
+      console.error('Error saving selection:', error);
+      // 에러 발생 시 재시도 로직 추가
+      setTimeout(() => saveSelection(restaurant), 3000); // 3초 후에 재시도
+    }
   }, []);
 
   const recommendRestaurant = useCallback(() => {
