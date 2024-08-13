@@ -85,6 +85,7 @@ def generate_gpt_response(prompt, restaurant_dict):
     try:
         # 각 요청에 대해 독립적인 컨텍스트를 설정
         response = openai.ChatCompletion.create(
+            #model="gpt-4",
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system",
@@ -242,8 +243,8 @@ def generate_gpt_response(prompt, restaurant_dict):
     Consider the following restaurants:
     {formatted_restaurants}
     
-    Based on the user's request: '{prompt}', recommend the best restaurant. Please answer such that the name(menu, distance, price_range) and some reasons in your response.
-    
+    Based on the user's request: '{prompt}', recommend the best restaurant. Please answer such that the name(menu, distance, price_range) and one reason in your response.
+    "Just give me the reason, and skip the unnecessary flattery. 
     """
     
     try:
@@ -254,8 +255,7 @@ def generate_gpt_response(prompt, restaurant_dict):
                  "content": 
                 """
                  You are an AI assistant who recommends restaurants.
-                 Always include the price information when asked and say in Korean within 70 words.
-                 Simply answer.
+                 Always include the price information when asked and say in Korean within 50 words.
                  Please provide a clear answer without repeating the question.
                  """},
                 {"role": "user", "content": full_prompt}

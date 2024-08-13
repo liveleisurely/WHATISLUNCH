@@ -13,13 +13,16 @@
 
 body {
   font-family: 'Noto Sans KR', sans-serif;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 .main-container {
   background-color: #f0f0f0;
   padding: 20px;
   border-radius: 8px;
-  margin-top: 20px;
+  min-height: 100vh;
 }
 
 .header {

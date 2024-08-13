@@ -151,25 +151,38 @@ const App = () => {
       <Router>
         <Routes>
           <Route exact path="/" element={
-            <Container maxWidth="xxl" className="main-container" sx={{ padding: '0 24px' }}>
-              <Grid container spacing={3}>
+            <Container 
+            maxWidth="xxl" 
+            className="main-container" 
+            sx={{ 
+              padding: '20px', 
+              borderRadius: '8px', 
+              minHeight: '100vh', 
+              display: 'flex', 
+              flexDirection: 'column',
+              justifyContent: 'center', 
+              alignItems: 'center' 
+            }}
+          >
+              <Grid container spacing={1} >
                 <Grid item xs={12} md={5}>
-                  <Box className="left-panel" sx={{ textAlign: 'center', padding: '20px', position: { md: 'fixed' }, width: { xs: '100%', md: '35%' } }}>
-                    <img src={logo} alt="로고" className="logo" style={{ maxWidth: '80%', marginBottom: '10px' }} />
+                  <Box className="left-panel" sx={{ textAlign: 'center', padding: '10px', position: { md: 'fixed' }, width: { xs: '100%', sm: '80%', md: '30%' } , ml: { md: 10}}}>
+                    <img src={logo} alt="로고" className="logo" style={{ maxWidth: '70%', marginBottom: '10px' }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <img src={lunchImage} alt="What is lunch?" style={{ width: '55%', height: '200px', marginBottom: '10px' }} />
                       <img src={lunchImage2} alt="What is lunch?" style={{ width: '55%', height: '200px', marginBottom: '10px' }} />
                     </div>
-
                     <Typography variant="h5" align="center" className="title" gutterBottom>
                       온택트 최대 난제: 오늘 점심 뭐먹지?
                     </Typography>
                     <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', gap: '10px' }}>
                       <Button variant="contained" color="primary" onClick={recommendRestaurant} style={{ width: '250px' }}>
-                        오늘의 점심은? 랜덤뽑기!
+                        오늘의 점심은?<br></br>
+                        랜덤뽑기!
                       </Button>
                       <Button variant="contained" color="secondary" onClick={recommendAdvancedRestaurant} style={{ width: '250px' }}>
-                        구체적으로 오늘의 점심은?
+                        조건부<br></br>
+                        오늘의 점심은?!
                       </Button>
                     </Box>
 
@@ -216,25 +229,25 @@ const App = () => {
                   </Box>
                 </Grid>
                 <Grid item xs={7} style={{ overflowY: 'auto', height: '150vh', marginLeft: 'auto' }}>
-                  <Box className="right-panel" sx={{ width: '100%' }}>
-                    <Grid container spacing={5}>
-                      <Grid item xs={6}>
-                        <Paper style={{ padding: '5px' }}>
+                  <Box className="right-panel" sx={{ width: '55%', position: { md: 'fixed' } }}>
+                    <Grid container spacing={3}>
+                      <Grid item xs={6} >
+                        <Paper style={{ padding: '2px' }}>
                           <DailyStatistics />
                         </Paper>
                       </Grid>
-                      <Grid item xs={6}>
-                        <Paper style={{ padding: '5px' }}>
+                      <Grid item xs={6} >
+                        <Paper style={{ padding: '2px' }}>
                           <WeeklyStatistics />
                         </Paper>
                       </Grid>
-                      <Grid item xs={6}>
-                        <Paper style={{ padding: '5px' }}>
+                      <Grid item xs={6} >
+                        <Paper style={{ padding: '2px' }}>
                           <MonthlyStatistics />
                         </Paper>
                       </Grid>
-                      <Grid item xs={6}>
-                        <Paper style={{ padding: '5px' }}>
+                      <Grid item xs={6} >
+                        <Paper style={{ padding: '2px' }}>
                           <WeekdayStatistics />
                         </Paper>
                       </Grid>
