@@ -1,59 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { Paper } from '@mui/material';
-import axios from 'axios';
+import React from 'react';
+import StatsChart from './StatsChart';
+import { useStats } from '../App';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { processDailyData } from './utils';
 
 // 필요한 스케일과 요소들을 등록합니다.
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const DailyStatistics = () => {
-  const [chartData, setChartData] = useState({ labels: [], datasets: [] });
-  const [title, setTitle] = useState('');
+  const { daily } = useStats();
+  const { labels, datasets } = processDailyData(daily);
 
-  useEffect(() => {
-    let isMounted = true;
+  // 현재 날짜를 가져와서 형식화
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+  const day = String(today.getDate()).padStart(2, '0');
 
-    axios.get('http://10.10.52.39:3001/api/stats/daily')
-      .then(response => {
-        const dailyData = response.data.data;
-        setChartData({
-          labels: dailyData.map(item => item[0]), // 레스토랑 이름
-          datasets: [
-            {
-              label: '일별 선택 횟수',
-              data: dailyData.map(item => item[1]), // 선택 횟수
-              backgroundColor: 'rgba(255, 99, 132, 0.2)',
-              borderColor: 'rgba(255, 99, 132, 1)',
-              borderWidth: 1,
-            },
-          ],
-        });
-        setTitle('일별 선택 통계');
-      })
-      .catch(error => console.error('Error fetching daily stats:', error));
-  }, []);
+  const title = `${year}년 ${month}월 ${day}일 선택 통계`;
 
-  return (
-    <Paper style={{ padding: '20px' }}>
-      <h3>{title}</h3>
-      <Bar
-        data={chartData}
-        options={{
-          responsive: true,
-          plugins: {
-            legend: { position: 'top' },
-            title: { display: true, text: title },
-          },
-        }}
-      />
-    </Paper>
-
-  );
-
-  return () => {
-    isMounted = false;
-  };
+  return <StatsChart title={title} labels={labels} datasets={datasets} />;
 };
 
 export default DailyStatistics;

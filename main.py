@@ -86,6 +86,65 @@ def generate_gpt_response(prompt, available_restaurants):
     print(response)  # 응답 전체를 출력하여 확인
     return response.choices[0].message['content'].strip()
 
+
+
+    
+@app.delete("/api/stats/reset")
+async def reset_stats(api_key: str):
+    authenticate_admin(api_key)
+    sql = "DELETE FROM recommend_log"
+    delete(sql)
+    return {"status": "success", "message": "All statistics have been reset"}
+
+
+
+@app.post("/log_recommendation")
+async def log_recommendation(request: Request):
+    data = await request.json()
+    print(f"Received data: {data}")  # 받은 데이터를 로그로 출력
+
+    conn = connect()
+    cur = conn.cursor()
+    sql = "INSERT INTO recommend_log (user_ip, restaurant, timestamp) VALUES (%s, %s, %s)"
+    try:
+        cur.execute(sql, (data['user_ip'], data['restaurant'], datetime.now()))
+        conn.commit()
+        print("Data committed successfully")  # 성공적으로 커밋되었는지 로그 출력
+    except Exception as e:
+        print(f"Error occurred: {e}")  # 오류 발생 시 오류 메시지를 출력
+        return {"status": "error", "message": str(e)}
+    finally:
+        conn.close()
+    
+    return {"status": "success", "message": "Log saved successfully"}
+
+
+@app.get("/select")
+async def select_all():
+    data = select("select * from restaurants;")
+    return {
+        "status": "success",
+        "data": data
+    }
+
+# 전체 레스트랑 목록
+@app.get("/restaurants")
+async def get_restaurants():
+    data = select("SELECT name, dist, menu, price_range,category FROM restaurants;")
+    return {
+        "status": "success",
+        "data": data
+    }
+
+# 랜덤 추천 하나
+@app.get("/recommend")
+async def recommend_restaurant():
+    picked = select("select name, dist, menu, price_range, category, scores, etc FROM restaurants ORDER BY RAND() LIMIT 1;")
+    return {
+        "status": "success",
+        "data": picked[0] if picked else None
+    }
+
 @app.post("/recommend/advanced")
 async def recommend_advanced(request: Request):
     data = await request.json()
@@ -126,60 +185,6 @@ async def recommend_advanced(request: Request):
         "data": recommended_restaurant
     }
     
-    
-@app.delete("/api/stats/reset")
-async def reset_stats(api_key: str):
-    authenticate_admin(api_key)
-    sql = "DELETE FROM recommend_log"
-    delete(sql)
-    return {"status": "success", "message": "All statistics have been reset"}
-
-
-
-@app.post("/log_recommendation")
-async def log_recommendation(request: Request):
-    data = await request.json()
-    print(f"Received data: {data}")  # 받은 데이터를 로그로 출력
-
-    conn = connect()
-    cur = conn.cursor()
-    sql = "INSERT INTO recommend_log (user_ip, restaurant, timestamp) VALUES (%s, %s, %s)"
-    try:
-        cur.execute(sql, (data['user_ip'], data['restaurant'], datetime.now()))
-        conn.commit()
-        print("Data committed successfully")  # 성공적으로 커밋되었는지 로그 출력
-    except Exception as e:
-        print(f"Error occurred: {e}")  # 오류 발생 시 오류 메시지를 출력
-        return {"status": "error", "message": str(e)}
-    finally:
-        conn.close()
-    
-    return {"status": "success", "message": "Log saved successfully"}
-
-
-@app.get("/select")
-async def select_all():
-    data = select("select * from restaurants;")
-    return {
-        "status": "success",
-        "data": data
-    }
-
-@app.get("/restaurants")
-async def get_restaurants():
-    data = select("SELECT name, dist, menu, price_range,category FROM restaurants;")
-    return {
-        "status": "success",
-        "data": data
-    }
-
-@app.get("/recommend")
-async def recommend_restaurant():
-    picked = select("select name, dist, menu, price_range, category, scores, etc FROM restaurants ORDER BY RAND() LIMIT 1;")
-    return {
-        "status": "success",
-        "data": picked[0] if picked else None
-    }
 
 @app.get("/api/stats/daily")
 async def get_daily_stats():
@@ -243,7 +248,7 @@ async def get_weekday_stats():
 
 if __name__ == "__main__":
     uvicorn.run("main:app"
-                #,host="0.0.0.0" # 배포 실행
-                ,host="127.0.0.1" # 나만보기
+                #,host="0.0.0.0" # 나만 보기
+                ,host="127.0.0.1" # 배포 실행
                 , port=3001
                 , reload=True)

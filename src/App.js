@@ -49,8 +49,11 @@ const StatsProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    fetchStats();
-    console.log('Stats fetched:', stats);
+    const intervalId = setInterval(() => {
+      fetchStats();
+    }, 500); // 0.5초마다 통계 데이터를 갱신
+  
+    return () => clearInterval(intervalId); // 컴포넌트 언마운트 시 인터벌 제거
   }, [fetchStats]);
 
   return (
@@ -104,7 +107,7 @@ const App = () => {
         const advancedRestaurant = response.data.data;
         if (advancedRestaurant) {
           setTimeout(() => {
-            setAdvancedRecommended(advancedRestaurant);
+            setAdvancedRecommended(advancedRestaurant); // 응답을 advancedRecommended에 저장
             setLoading(false);
           }, 500);
         } else {
@@ -148,54 +151,59 @@ const App = () => {
                       <img src={lunchImage} alt="What is lunch?" style={{ width: '55%', height: '200px', marginBottom: '10px' }} />
                       <img src={lunchImage2} alt="What is lunch?" style={{ width: '55%', height: '200px', marginBottom: '10px' }} />
                     </div>
+
                     <Typography variant="h4" align="center" className="title" gutterBottom>
                       온택트 최대 난제: 오늘 점심 뭐먹지?
                     </Typography>
-                    <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '10px' }}>
-                      <Button variant="contained" color="primary" onClick={recommendRestaurant} style={{ marginBottom: '10px', width: '100%' }}>
-                        오늘의 점심은?!
+                    <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', gap: '10px' }}>
+                      <Button variant="contained" color="primary" onClick={recommendRestaurant} style={{ width: '250px' }}>
+                        오늘의 점심은? 랜덤뽑기!
+                      </Button>
+                      <Button variant="contained" color="secondary" onClick={recommendAdvancedRestaurant} style={{ width: '250px' }}>
+                        구체적으로 오늘의 점심은?
                       </Button>
                     </Box>
-                    {loading && (
-                      <Paper elevation={3} className="loading-container" style={{ padding: '20px', textAlign: 'center' }}>
+
+                    <TextField 
+                      value={advancedPrompt} 
+                      onChange={(e) => setAdvancedPrompt(e.target.value)} 
+                      placeholder="원하는 메뉴나 조건을 입력하세요" 
+                      fullWidth 
+                      style={{ marginBottom: '20px' }}
+                    />
+
+                    <Paper elevation={3} className="recommendation" style={{ padding: '10px', minHeight: '100px' }}>
+                      {loading ? (
                         <Typography variant="h5" align="center" className="loading-text">
                           오늘의 점심은....
                         </Typography>
-                      </Paper>
-                    )}
-                    {recommended && !loading && (
-                      <Paper elevation={3} className="recommendation" style={{ padding: '10px' }}>
-                        <Typography variant="h5" align="center" className="recommendation-name highlight">
-                          {recommended[0]} {/* name */}
-                        </Typography>
-                        <Typography variant="body1" align="center" className="recommendation-menu">
-                          회사와의 거리: {recommended[1]}m {/* dist */}
-                          <br />
-                          <strong style={{ fontSize: '18px' }}>{recommended[2]}</strong> {/* menu */}
-                          <br />
-                          가격대: {recommended[3]} {/* price_range */}
-                        </Typography>
-                      </Paper>
-                    )}
-                    <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '10px' }}>
-                      <TextField 
-                        value={advancedPrompt} 
-                        onChange={(e) => setAdvancedPrompt(e.target.value)} 
-                        placeholder="원하는 메뉴나 조건을 입력하세요" 
-                        fullWidth 
-                        style={{ marginBottom: '10px' }}
-                      />
-                      <Button variant="contained" color="secondary" onClick={recommendAdvancedRestaurant} style={{ width: '100%' }}>
-                        오늘의 점심은? (고급)
-                      </Button>
-                    </Box>
-                    {advancedRecommended && !loading && (
-                      <Paper elevation={3} className="recommendation" style={{ padding: '20px' }}>
-                        <Typography variant="body" align="center" className="recommendation-name highlight">
-                          {advancedRecommended}
-                        </Typography>
-                      </Paper>
-                    )}
+                      ) : (
+                        <>
+                          {recommended ? (
+                            <>
+                              <Typography variant="h5" align="center" className="recommendation-name highlight">
+                                {recommended[0]} {/* 일반 추천 결과: 가게 이름 */}
+                              </Typography>
+                              <Typography variant="body1" align="center" className="recommendation-menu">
+                                회사와의 거리: {recommended[1]}m {/* 거리 */}
+                                <br />
+                                <strong style={{ fontSize: '18px' }}>{recommended[2]}</strong> {/* 메뉴 */}
+                                <br />
+                                가격대: {recommended[3]} {/* 가격대 */}
+                              </Typography>
+                            </>
+                          ) : advancedRecommended ? (
+                            <Typography variant="h5" align="center" className="recommendation-name highlight">
+                              {advancedRecommended} {/* 고급 추천 결과 텍스트 그대로 표시 */}
+                            </Typography>
+                          ) : (
+                            <Typography variant="h6" align="center" color="textSecondary">
+                              아직 추천 결과가 없습니다.
+                            </Typography>
+                          )}
+                        </>
+                      )}
+                    </Paper>
                   </Box>
                 </Grid>
                 <Grid item xs={7} style={{ overflowY: 'auto', height: '150vh', marginLeft: 'auto' }}>

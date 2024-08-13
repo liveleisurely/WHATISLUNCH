@@ -8,6 +8,11 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const WeekdayStatistics = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+  const day = String(today.getDate()).padStart(2, '0');
+
   const { weekday } = useStats();
   const { labels, datasets } = processWeekdayData(weekday);
   return <StatsChart title="요일별 선택 통계" labels={labels} datasets={datasets} indexAxis="y" />;
