@@ -53,6 +53,12 @@
 ## ver 3.1.4 update
 - saveselection 함수에 timeout을 주어 동기화 시간 지연으로 인한 오류가 발생하지 않도록함
 
+## ver 3.1.5 update
+- recommendAdvancedRestaurant 함수에 
+setRecommended(null): 고급 추천이 성공적으로 완료되었을 때,
+recommended 상태를 null로 초기화합니다. 이렇게 하면 고급 추천이 있을 때 일반 추천 결과가 표시되지 않도록 함
+- 표출 로직 변경: 고급 추천이 있을 경우, 그것이 우선 표시되도록 하였고, 일반 추천은 없을 경우에만 표시되도록 조건을 추가함.
+
 ## 추후 개발 예정
 - 실시간 반영
 - 지도 삽입

@@ -116,6 +116,7 @@ const App = () => {
         if (advancedRestaurant) {
           setTimeout(() => {
             setAdvancedRecommended(advancedRestaurant); // 응답을 advancedRecommended에 저장
+            setRecommended(null); // 기본 추천 결과를 초기화
             setLoading(false);
           }, 500);
         } else {
@@ -160,7 +161,7 @@ const App = () => {
                       <img src={lunchImage2} alt="What is lunch?" style={{ width: '55%', height: '200px', marginBottom: '10px' }} />
                     </div>
 
-                    <Typography variant="h4" align="center" className="title" gutterBottom>
+                    <Typography variant="h5" align="center" className="title" gutterBottom>
                       온택트 최대 난제: 오늘 점심 뭐먹지?
                     </Typography>
                     <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', gap: '10px' }}>
