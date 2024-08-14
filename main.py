@@ -216,14 +216,26 @@ async def recommend_triple_restaurant():
     if not data['data']:
         return {"status": "error", "message": "No restaurant data found."}
     
-    # 데이터 개수를 가져옴
     total_data_count = len(data['data'])
+    if total_data_count < 3:
+        return {"status": "error", "message": "Not enough data to select 3 restaurants."}
     
-    # 3개의 랜덤 인덱스 선택 (중복 방지를 위해 sample 사용)
     random_idxs = [idx + 1 for idx in random.sample(range(total_data_count), 3)]
     
-    # 해당 인덱스의 데이터 선택
-    selected_data = [select(f"SELECT name, dist, menu, price_range, category, scores, etc FROM restaurants WHERE id = {idx};")[0] for idx in random_idxs]
+    selected_data = []
+    print(selected_data)
+    for idx in random_idxs:
+        try:
+            result = select(f"SELECT name, dist, menu, price_range, category, scores, etc FROM restaurants WHERE id = {idx};")
+            if result:
+                selected_data.append(result[0])
+            else:
+                print(f"No data found for index: {idx}")
+        except Exception as e:
+            print(f"Error occurred when querying for index {idx}: {e}")
+    
+    if len(selected_data) < 3:
+        return {"status": "error", "message": "Could not retrieve 3 restaurants."}
     
     return {
         "status": "success",

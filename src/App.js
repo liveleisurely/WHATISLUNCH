@@ -49,10 +49,17 @@ const StatsProvider = ({ children }) => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchStats();
-    }, 5000);
+    }, 2000);
   
+    // 컴포넌트가 언마운트될 때 인터벌을 정리합니다.
     return () => clearInterval(intervalId);
   }, [fetchStats]);
+  
+  return (
+    <StatsContext.Provider value={stats}>
+      {children}
+    </StatsContext.Provider>
+  );
 
   return (
     <StatsContext.Provider value={stats}>
@@ -145,7 +152,12 @@ const App = () => {
   }, []);
 
   const recommendRestaurant = useCallback(() => {
+    // 이전 추천 상태를 초기화
+    setRecommended(null);
+    setTripleRecommended([]);
+    setAdvancedRecommended(null);
     setLoading(true);
+  
     axios.get('http://10.10.52.39:3001/recommend')
       .then(response => {
         const randomRestaurant = response.data.data;
@@ -154,7 +166,7 @@ const App = () => {
             setRecommended(randomRestaurant);
             saveSelection(randomRestaurant);
             setLoading(false);
-          }, 1500); /*로딩시간*/
+          }, 1500); // 로딩 시간
         } else {
           console.error('No data received');
           setLoading(false);
@@ -165,18 +177,23 @@ const App = () => {
         setLoading(false);
       });
   }, [saveSelection]);
-
+  
   const recommendTripleRestaurant = useCallback(() => {
+    // 이전 추천 상태를 초기화
+    setRecommended(null);
+    setTripleRecommended([]);
+    setAdvancedRecommended(null);
     setLoading(true);
+  
     axios.get('http://10.10.52.39:3001/recommend/triple')
       .then(response => {
         const randomRestaurants = response.data.data;
-        if (randomRestaurants) {
+        if (randomRestaurants && randomRestaurants.length > 0) {
           setTimeout(() => {
             setTripleRecommended(randomRestaurants);
             randomRestaurants.forEach(saveSelection); // 3개 모두 저장
             setLoading(false);
-          }, 1500); /*로딩시간*/
+          }, 1500); // 로딩 시간
         } else {
           console.error('No data received');
           setLoading(false);
@@ -187,6 +204,7 @@ const App = () => {
         setLoading(false);
       });
   }, [saveSelection]);
+  
 
   const recommendAdvancedRestaurant = useCallback(() => {
     setLoading(true);
@@ -210,11 +228,15 @@ const App = () => {
       });
   }, [advancedPrompt]);
 
-  const resetSavedData = useCallback(() => {
-    axios.delete(`http://10.10.52.39:3001/api/stats/reset?api_key=${adminApiKey}`)
+  const resetData = useCallback((type) => {
+    const url = type === 'today' 
+      ? `http://10.10.52.39:3001/api/stats/reset/today?api_key=${adminApiKey}`
+      : `http://10.10.52.39:3001/api/stats/reset?api_key=${adminApiKey}`;
+  
+    axios.delete(url)
       .then(response => {
         if (response.data.status === 'success') {
-          alert('통계가 초기화되었습니다.');
+          alert(type === 'today' ? '오늘 날짜의 통계가 초기화되었습니다.' : '통계가 초기화되었습니다.');
         } else {
           alert('통계 초기화에 실패했습니다.');
         }
@@ -228,25 +250,7 @@ const App = () => {
         setAdminApiKey('');
       });
   }, [adminApiKey]);
-
-  const resetTodayData = useCallback(() => {
-    axios.delete(`http://10.10.52.39:3001/api/stats/reset/today?api_key=${adminApiKey}`)
-      .then(response => {
-        if (response.data.status === 'success') {
-          alert('오늘 날짜의 통계가 초기화되었습니다.');
-        } else {
-          alert('통계 초기화에 실패했습니다.');
-        }
-      })
-      .catch(error => {
-        console.error('Error resetting today\'s stats:', error);
-        alert('오늘 날짜의 통계 초기화에 실패했습니다.');
-      })
-      .finally(() => {
-        setOpenDialog(false);
-        setAdminApiKey('');
-      });
-  }, [adminApiKey]);
+  
 
   const handleOpenDialog = (action) => {
     setOpenDialog(action);

@@ -17,21 +17,13 @@ const GPTChat = () => {
 
     try {
       // 서버에 요청을 보내 GPT의 응답을 가져옴
-      const response = await axios.post('http://10.10.52.39:3001/recommend/advanced', { 
-        prompt: message,
-        num_recommendations: 3  // 이 값은 원하는 추천 개수로 설정할 수 있습니다.
-      });
+      const response = await axios.post('http://10.10.52.39:3001/recommend/advanced', { prompt: message });
 
       // 서버로부터 받은 GPT 응답 메시지
-      const gptMessages = response.data.data;
+      const gptMessage = { sender: 'gpt', text: response.data.data };
 
-      // GPT의 응답을 채팅 기록에 추가 (여러 개의 추천을 처리)
-      const formattedGPTMessages = gptMessages.map((msg, index) => ({
-        sender: 'gpt',
-        text: `${index + 1}. ${msg}`  // 각 메시지를 번호로 구분
-      }));
-
-      setChatHistory(prevChatHistory => [...prevChatHistory, ...formattedGPTMessages]);
+      // GPT의 응답을 채팅 기록에 추가
+      setChatHistory(prevChatHistory => [...prevChatHistory, gptMessage]);
     } catch (error) {
       console.error('Error fetching GPT response:', error);
       const errorMessage = { sender: 'gpt', text: '죄송합니다. 현재 요청을 처리할 수 없습니다.' };
