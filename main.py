@@ -9,6 +9,7 @@ from typing import List
 import random
 from api_config import dataAPI,openAPI
 import openai
+import os
 
 app = FastAPI()
 
@@ -115,7 +116,6 @@ def generate_gpt_response(prompt, restaurant_dict):
         raise HTTPException(status_code=500, detail="An unexpected error occurred.")
 
 
-    
 @app.delete("/api/stats/reset")
 async def reset_stats(api_key: str):
     authenticate_admin(api_key)
@@ -138,6 +138,18 @@ async def reset_today_stats(api_key: str):
     delete(sql)
     
     return {"status": "success", "message": "Today's statistics have been reset"}
+
+@app.post("/api/authenticate")
+async def authenticate(request: Request):
+    data = await request.json()
+    api_key = data.get("apiKey")
+
+    try:
+        authenticate_admin(api_key)
+        return {"status": "success"}
+    except HTTPException:
+        return {"status": "error", "detail": "Unauthorized"}
+
 
 @app.post("/log_recommendation")
 async def log_recommendation(request: Request):
@@ -352,5 +364,4 @@ if __name__ == "__main__":
                 ,host="0.0.0.0" # 배포 실행
                 #,host="127.0.0.1" # 나만 보기
                 , port=3001
-                , reload=True
-                , log_level="debug")
+                , reload=True)

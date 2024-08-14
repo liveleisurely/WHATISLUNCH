@@ -8,7 +8,7 @@ import DailyStatistics from './components/DailyStatistics';
 import WeeklyStatistics from './components/WeeklyStatistics';
 import MonthlyStatistics from './components/MonthlyStatistics';
 import WeekdayStatistics from './components/WeekdayStatistics';
-import GPTChat from './components/GPTChat';  // GPTChat 컴포넌트 임포트
+import GPTChat from './components/GPTChat';
 import './App.css';
 import logo from './logo.svg';
 import lunchImage from './mukbang.jfif';
@@ -61,6 +61,63 @@ const StatsProvider = ({ children }) => {
   );
 };
 
+const AdminLogin = ({ onLogin }) => {
+  const [apiKey, setApiKey] = useState('');
+  const [loginError, setLoginError] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/authenticate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ apiKey }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === 'success') {
+          onLogin(true);
+          setLoginError('');
+        } else {
+          setLoginError('유효하지 않은 API 키입니다.');
+        }
+      } else {
+        setLoginError('서버 오류가 발생했습니다.');
+      }
+    } catch (error) {
+      setLoginError('로그인 요청 실패');
+    }
+  };
+
+  return (
+    <Dialog open={true} onClose={() => onLogin(false)}>
+      <DialogTitle>관리자 로그인</DialogTitle>
+      <DialogContent>
+        <TextField
+          autoFocus
+          margin="dense"
+          label="API 키"
+          type="password"
+          fullWidth
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+        />
+        {loginError && <Typography color="error">{loginError}</Typography>}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => onLogin(false)} color="primary">
+          취소
+        </Button>
+        <Button onClick={handleLogin} color="primary">
+          로그인
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const App = () => {
   const [recommended, setRecommended] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -68,6 +125,8 @@ const App = () => {
   const [advancedRecommended, setAdvancedRecommended] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [adminApiKey, setAdminApiKey] = useState('');
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);  // 로그인 상태 추가
+  const [openLoginDialog, setOpenLoginDialog] = useState(false); // 관리자 로그인 다이얼로그 상태 추가
 
   const saveSelection = useCallback(async (restaurant) => {
     try {
@@ -172,6 +231,11 @@ const App = () => {
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
+  };
+
+  const handleLogin = (loggedIn) => {
+    setIsAdminLoggedIn(loggedIn);
+    setOpenLoginDialog(false);  // 로그인 후 다이얼로그 닫기
   };
 
   return (
@@ -279,21 +343,41 @@ const App = () => {
                             밥집 데이터 추가하기
                           </Button>
                         </Grid>
-                        <Grid item style={{ width: '100%', maxWidth: '200px' }}>
-                          <Button variant="contained" color="secondary" onClick={() => handleOpenDialog('today')} style={{ width: '100%' }}>
-                            오늘 통계 리셋
-                          </Button>
-                        </Grid>
-                        <Grid item style={{ width: '100%', maxWidth: '200px' }}>
-                            <Button variant="contained" color="secondary" onClick={() => handleOpenDialog('all')} style={{ width: '100%' }}>
-                            전체 통계 리셋
-                          </Button>
-                        </Grid>
+                        { isAdminLoggedIn && ( 
+                          <>
+                            <Grid item style={{ width: '100%', maxWidth: '200px' }}>
+                              <Button variant="contained" color="secondary" onClick={() => handleOpenDialog('today')} style={{ width: '100%' }}>
+                                오늘 통계 리셋
+                              </Button>
+                            </Grid>
+                            <Grid item style={{ width: '100%', maxWidth: '200px' }}>
+                              <Button variant="contained" color="secondary" onClick={() => handleOpenDialog('all')} style={{ width: '100%' }}>
+                                전체 통계 리셋
+                              </Button>
+                            </Grid>
+                          </>
+                        )}
                       </Grid>
                     </Grid>
                   </Box>
                 </Grid>
               </Grid>
+              {/* 관리자 로그인 버튼 */}
+              {!isAdminLoggedIn && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setOpenLoginDialog(true)}
+                  style={{
+                    position: 'fixed',
+                    bottom: '20px',
+                    right: '20px',
+                    zIndex: 1200 // 다이얼로그보다 높은 z-index
+                  }}
+                >
+                  관리자 로그인
+                </Button>
+              )}
               {/* 관리자 API 키 입력 Dialog */}
               <Dialog open={openDialog !== false} onClose={handleCloseDialog}>
                 <DialogTitle>관리자 API 키 입력</DialogTitle>
@@ -325,6 +409,10 @@ const App = () => {
                     확인
                   </Button>
                 </DialogActions>
+              </Dialog>
+              {/* 관리자 로그인 다이얼로그 */}
+              <Dialog open={openLoginDialog} onClose={() => setOpenLoginDialog(false)}>
+                <AdminLogin onLogin={handleLogin} />
               </Dialog>
             </Container>
           } />
