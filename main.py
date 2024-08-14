@@ -223,7 +223,6 @@ async def recommend_triple_restaurant():
     random_idxs = [idx + 1 for idx in random.sample(range(total_data_count), 3)]
     
     selected_data = []
-    print(selected_data)
     for idx in random_idxs:
         try:
             result = select(f"SELECT name, dist, menu, price_range, category, scores, etc FROM restaurants WHERE id = {idx};")

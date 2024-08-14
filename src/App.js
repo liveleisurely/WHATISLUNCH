@@ -211,16 +211,18 @@ const App = () => {
     axios.post('http://10.10.52.39:3001/recommend/advanced', { prompt: advancedPrompt })
       .then(response => {
         const advancedRestaurant = response.data.data;
-        if (advancedRestaurant) {
-          setTimeout(() => {
-            setAdvancedRecommended(advancedRestaurant);
-            setRecommended(null);
-            setLoading(false);
-          }, 500);
+  
+        if (Array.isArray(advancedRestaurant)) {
+          // 여러 레스토랑 추천이 반환된 경우
+          setAdvancedRecommended(advancedRestaurant.join(', '));  // 또는 다른 포맷으로 처리
         } else {
-          console.error('No data received');
-          setLoading(false);
+          // 단일 레스토랑 추천이 반환된 경우
+          setAdvancedRecommended(advancedRestaurant);
         }
+  
+        setTimeout(() => {
+          setLoading(false);
+        }, 300);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
@@ -445,9 +447,9 @@ const App = () => {
                   <Button
                     onClick={() => {
                       if (openDialog === 'today') {
-                        resetTodayData();
+                        resetData('today');
                       } else if (openDialog === 'all') {
-                        resetSavedData();
+                        resetData('all');
                       }
                     }}
                     color="primary"
