@@ -17,7 +17,7 @@ const GPTChat = () => {
 
     try {
       // 서버에 요청을 보내 GPT의 응답을 가져옴
-      const response = await axios.post('http://localhost:3001/recommend/advanced', { prompt: message });
+      const response = await axios.post('http://10.10.52.39:3001/recommend/advanced', { prompt: message });
 
       // 서버로부터 받은 GPT 응답 메시지
       const gptMessage = { sender: 'gpt', text: response.data.data };

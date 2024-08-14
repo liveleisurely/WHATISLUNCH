@@ -257,7 +257,7 @@ const App = () => {
               }}
             >
               <Grid container spacing={1}>
-                <Grid item xs={12} md={5}>
+                <Grid item xs={12} md={5} style={{ overflowY: 'auto'}}>
                   <Box className="left-panel" sx={{ textAlign: 'center', padding: '10px', position: { md: 'fixed' }, width: { xs: '100%', sm: '80%', md: '30%' }, ml: { md: 10 } }}>
                     <img src={logo} alt="로고" className="logo" style={{ maxWidth: '70%', marginBottom: '10px' }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
