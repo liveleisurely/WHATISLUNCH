@@ -4,9 +4,9 @@
 
 [터미널]
 ### 백엔드 실행
->> python main.py
+> python main.py
 ### 프론트 실행
->> npm start
+> npm start
 
 ## 목적
 - 점심 메뉴 선택장애자들을 위한 점심 메뉴 구현
