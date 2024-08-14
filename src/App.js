@@ -280,14 +280,15 @@ const App = () => {
                 borderRadius: '8px', 
                 minHeight: '100vh', 
                 display: 'flex', 
-                flexDirection: 'column',
-                justifyContent: 'center', 
-                alignItems: 'center' 
+                flexDirection: {xs:'column', md:'row'},
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                overflow: 'hidden' // 혹시 모를 오버플로우 방지
               }}
             >
-              <Grid container spacing={1}>
+              <Grid container spacing={2}>
                 <Grid item xs={12} md={5}>
-                  <Box className="left-panel" sx={{ textAlign: 'center', padding: '10px', position: { md: 'fixed' }, width: { xs: '100%', sm: '80%', md: '30%' }, ml: { md: 10 } }}>
+                  <Box className="left-panel" sx={{flex: 1, textAlign: 'center', padding: '10px', position: { md: 'fixed' }, top:'20px', width: { xs: '100%', sm: '80%', md: '30%' }, ml: { md: 10 } }}>
                     <img src={logo} alt="로고" className="logo" style={{ maxWidth: '50%', marginBottom: '10px' }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <img src={lunchImage} alt="What is lunch?" style={{ width: '55%', height: '200px', marginBottom: '10px' }} />
@@ -298,10 +299,12 @@ const App = () => {
                     </Typography>
                     <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: '10px', gap: '10px' }}>
                       <Button variant="contained" color="primary" onClick={recommendRestaurant} style={{ width: '250px' }}>
-                        오늘의 점심은? 랜덤뽑기!
+                        오늘의 점심은?<br></br>
+                        랜덤뽑기!
                       </Button>
                       <Button variant="contained" color="secondary" onClick={recommendTripleRestaurant} style={{ width: '250px' }}>
-                        오늘 점심은? 3연속 뽑기!
+                        오늘 점심은? <br></br>
+                        3연속 뽑기!
                       </Button>
                     </Box>
 
@@ -358,7 +361,7 @@ const App = () => {
                   </Box>
                 </Grid>
                 <Grid item xs={12} md={7} style={{ overflowY: 'auto', height: '150vh', marginLeft: 'auto' }}>
-                  <Box className="right-panel" sx={{ width: { xs: '100%', md: '55%' }, position: { md: 'fixed' }, marginTop: { xs: '20px', md: '0' } }}>
+                  <Box className="right-panel" sx={{flex:2, width: { xs: '100%', md: '55%' }, position: { md: 'fixed' }, marginTop: { xs: '20px', md: '0' } }}>
                     <Grid container spacing={3}>
                       <Grid item xs={12} md={6}>
                         <Paper style={{ padding: '2px' }}>

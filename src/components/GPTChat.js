@@ -35,7 +35,7 @@ const GPTChat = () => {
   };
 
   return (
-    <Paper elevation={3} sx={{ padding: '10px', marginTop: '10px', maxWidth: '600px', margin: 'auto' }}>
+    <Paper elevation={3} sx={{ padding: '10px', marginTop: '10px', maxWidth: '600px', margin: 'auto', zIndex: 1 }}> 
       <Typography variant="h6" gutterBottom>
         GPT 3.5 기반 채팅
       </Typography>
@@ -46,7 +46,7 @@ const GPTChat = () => {
           marginBottom: '10px', 
           padding: '10px', 
           border: '1px solid #ccc', 
-          borderRadius: '4px' 
+          borderRadius: '4px'
         }}
       >
         {chatHistory.map((chat, index) => (

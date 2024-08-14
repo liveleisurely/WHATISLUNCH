@@ -105,6 +105,14 @@ body {
     padding: 10px;
   }
 
+  .left-panel {
+    width: 100%;
+  }
+
+  .right-panel {
+    width: 100%;
+  }
+
   .logo {
     max-width: 150px;
   }
@@ -120,6 +128,8 @@ body {
   .loading-text {
     font-size: 1.2em;
   }
+
+
 }
 
 
@@ -139,15 +149,7 @@ body {
   animation: spin 1s linear infinite;
 }
 
-.left-panel {
-  text-align: center;
-  padding: 10px;
-  position: fixed;
-  width: 30%;
-  height: calc(100vh - 20px); /* Adjust the height to fit the viewport */
-  overflow-y: auto; /* Add vertical scrolling */
-  overflow-x: hidden; /* Hide horizontal scrolling */
-}
+
 
 @keyframes spin {
   0% {
