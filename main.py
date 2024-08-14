@@ -80,7 +80,7 @@ def generate_gpt_response(prompt, restaurant_dict):
     Consider the following restaurants:
     {formatted_restaurants}
     Based on the user's request: '{prompt}', You're purpose is only to recommend the best restaurant.
-    ANSWER LIKE THIS: "restaurant(menu, distance, price_range) and some reasons in your response in Korea within 70 words.
+    ANSWER LIKE THIS: "restaurant(menu, distance, price_range) and some reasons in your response in Korea within 200 words.
     ".
     """
     
@@ -95,9 +95,9 @@ def generate_gpt_response(prompt, restaurant_dict):
                 """
                  You are an AI assistant who recommends restaurants.
                  YOU SHOULD ANSWER WITH THIS FORMAT: 
-                 "restaurant(menu, distance, price_range)
-                 reasons: "___"
+                 "restaurant(menu, distance, price_range) reasons: "___"
                  From DB, call the information of restaurant and Fill ___ with recommendation reason.
+                 Multiple recommendation is okay.
                  Please provide a clear answer without repeating the question.
                  """},
                 {"role": "user", "content": full_prompt}
@@ -192,10 +192,42 @@ async def get_restaurants():
 # 랜덤 추천 하나
 @app.get("/recommend")
 async def recommend_restaurant():
-    picked = select("select name, dist, menu, price_range, category, scores, etc FROM restaurants ORDER BY RAND() LIMIT 1;")
+    data = await select_all()
+    if not data['data']:
+        return {"status": "error", "message": "No restaurant data found."}
+    
+    # 데이터 개수를 가져옴
+    total_data_count = len(data['data'])
+    
+    # 1개의 랜덤 인덱스 선택 (0부터 시작하므로 나중에 DB 인덱스에 맞추기 위해 +1)
+    random_idx = random.randint(0, total_data_count - 1) + 1
+    
+    # 해당 인덱스의 데이터 선택
+    selected_data = select(f"SELECT name, dist, menu, price_range, category, scores, etc FROM restaurants WHERE id = {random_idx};")[0]
+    
     return {
         "status": "success",
-        "data": picked[0] if picked else None
+        "data": selected_data
+    }
+
+@app.get("/recommend/triple")
+async def recommend_triple_restaurant():
+    data = await select_all()
+    if not data['data']:
+        return {"status": "error", "message": "No restaurant data found."}
+    
+    # 데이터 개수를 가져옴
+    total_data_count = len(data['data'])
+    
+    # 3개의 랜덤 인덱스 선택 (중복 방지를 위해 sample 사용)
+    random_idxs = [idx + 1 for idx in random.sample(range(total_data_count), 3)]
+    
+    # 해당 인덱스의 데이터 선택
+    selected_data = [select(f"SELECT name, dist, menu, price_range, category, scores, etc FROM restaurants WHERE id = {idx};")[0] for idx in random_idxs]
+    
+    return {
+        "status": "success",
+        "data": selected_data
     }
 
 @app.post("/recommend/advanced")

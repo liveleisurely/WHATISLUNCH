@@ -139,6 +139,16 @@ body {
   animation: spin 1s linear infinite;
 }
 
+.left-panel {
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  width: 30%;
+  height: calc(100vh - 20px); /* Adjust the height to fit the viewport */
+  overflow-y: auto; /* Add vertical scrolling */
+  overflow-x: hidden; /* Hide horizontal scrolling */
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

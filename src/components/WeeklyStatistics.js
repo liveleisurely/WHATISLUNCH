@@ -13,7 +13,7 @@ const WeeklyStatistics = () => {
   const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
   const day = String(today.getDate()).padStart(2, '0');
 
-  const title = `${year}년 ${month}월 주차별 추천 통계 Top3`;
+  const title = `${year}년 ${month}월 주차별 뽑기 통계 Top3`;
 
   const { weekly } = useStats();
   const { labels, datasets } = processWeeklyData(weekly);

@@ -12,10 +12,12 @@ const WeekdayStatistics = () => {
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
   const day = String(today.getDate()).padStart(2, '0');
+  const dayOfWeek = today.toLocaleDateString('ko-KR', { weekday: 'long' });
+  const title = `${dayOfWeek}에 뽑기 통계 Top3`;
 
   const { weekday } = useStats();
   const { labels, datasets } = processWeekdayData(weekday);
-  return <StatsChart title="요일별 추천 통계 Top3" labels={labels} datasets={datasets} indexAxis="y" />;
+  return <StatsChart title={title} labels={labels} datasets={datasets} indexAxis="y" />;
 };
 
 export default WeekdayStatistics;

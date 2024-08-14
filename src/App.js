@@ -120,13 +120,14 @@ const AdminLogin = ({ onLogin }) => {
 
 const App = () => {
   const [recommended, setRecommended] = useState(null);
+  const [tripleRecommended, setTripleRecommended] = useState([]);
   const [loading, setLoading] = useState(false);
   const [advancedPrompt, setAdvancedPrompt] = useState('');
   const [advancedRecommended, setAdvancedRecommended] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [adminApiKey, setAdminApiKey] = useState('');
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);  // 로그인 상태 추가
-  const [openLoginDialog, setOpenLoginDialog] = useState(false); // 관리자 로그인 다이얼로그 상태 추가
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [openLoginDialog, setOpenLoginDialog] = useState(false);
 
   const saveSelection = useCallback(async (restaurant) => {
     try {
@@ -153,7 +154,29 @@ const App = () => {
             setRecommended(randomRestaurant);
             saveSelection(randomRestaurant);
             setLoading(false);
-          }, 500);
+          }, 1500); /*로딩시간*/
+        } else {
+          console.error('No data received');
+          setLoading(false);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      });
+  }, [saveSelection]);
+
+  const recommendTripleRestaurant = useCallback(() => {
+    setLoading(true);
+    axios.get('http://10.10.52.39:3001/recommend/triple')
+      .then(response => {
+        const randomRestaurants = response.data.data;
+        if (randomRestaurants) {
+          setTimeout(() => {
+            setTripleRecommended(randomRestaurants);
+            randomRestaurants.forEach(saveSelection); // 3개 모두 저장
+            setLoading(false);
+          }, 1500); /*로딩시간*/
         } else {
           console.error('No data received');
           setLoading(false);
@@ -201,8 +224,8 @@ const App = () => {
         alert('통계 초기화에 실패했습니다.');
       })
       .finally(() => {
-        setOpenDialog(false);  // 다이얼로그 닫기
-        setAdminApiKey('');    // API 키 초기화
+        setOpenDialog(false);
+        setAdminApiKey('');
       });
   }, [adminApiKey]);
 
@@ -220,8 +243,8 @@ const App = () => {
         alert('오늘 날짜의 통계 초기화에 실패했습니다.');
       })
       .finally(() => {
-        setOpenDialog(false);  // 다이얼로그 닫기
-        setAdminApiKey('');    // API 키 초기화
+        setOpenDialog(false);
+        setAdminApiKey('');
       });
   }, [adminApiKey]);
 
@@ -235,7 +258,7 @@ const App = () => {
 
   const handleLogin = (loggedIn) => {
     setIsAdminLoggedIn(loggedIn);
-    setOpenLoginDialog(false);  // 로그인 후 다이얼로그 닫기
+    setOpenLoginDialog(false);
   };
 
   return (
@@ -257,9 +280,9 @@ const App = () => {
               }}
             >
               <Grid container spacing={1}>
-                <Grid item xs={12} md={5} style={{ overflowY: 'auto'}}>
+                <Grid item xs={12} md={5}>
                   <Box className="left-panel" sx={{ textAlign: 'center', padding: '10px', position: { md: 'fixed' }, width: { xs: '100%', sm: '80%', md: '30%' }, ml: { md: 10 } }}>
-                    <img src={logo} alt="로고" className="logo" style={{ maxWidth: '70%', marginBottom: '10px' }} />
+                    <img src={logo} alt="로고" className="logo" style={{ maxWidth: '50%', marginBottom: '10px' }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <img src={lunchImage} alt="What is lunch?" style={{ width: '55%', height: '200px', marginBottom: '10px' }} />
                       <img src={lunchImage2} alt="What is lunch?" style={{ width: '55%', height: '200px', marginBottom: '10px' }} />
@@ -267,16 +290,19 @@ const App = () => {
                     <Typography variant="h5" align="center" className="title" gutterBottom>
                       온택트 최대 난제: 오늘 점심 뭐먹지?
                     </Typography>
-                    <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: '15px', gap: '10px' }}>
+                    <Box style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: '10px', gap: '10px' }}>
                       <Button variant="contained" color="primary" onClick={recommendRestaurant} style={{ width: '250px' }}>
                         오늘의 점심은? 랜덤뽑기!
                       </Button>
+                      <Button variant="contained" color="secondary" onClick={recommendTripleRestaurant} style={{ width: '250px' }}>
+                        오늘 점심은? 3연속 뽑기!
+                      </Button>
                     </Box>
 
-                    <Paper elevation={3} className="recommendation" style={{ padding: '10px', minHeight: '100px' }}>
+                    <Paper elevation={3} className="recommendation" style={{ padding: '10px', minHeight: '80px' }}>
                       {loading ? (
                         <Typography variant="h5" align="center" className="loading-text">
-                          오늘의 점심은....
+                          오늘의 점심은.... 쪼는맛!!!! (2초)
                         </Typography>
                       ) : (
                         <>
@@ -295,6 +321,22 @@ const App = () => {
                             <Typography variant="h5" align="center" className="recommendation-name highlight">
                               {advancedRecommended}
                             </Typography>
+                          ) : tripleRecommended.length > 0 ? (
+                            <Grid container spacing={2}>
+                              {tripleRecommended.map((restaurant, index) => (
+                                <Grid item xs={4} key={index}>
+                                  <Paper elevation={3} className="recommendation" style={{ padding: '5px', minHeight: '100px' }}>
+                                    <Typography variant="h6" align="center" className="recommendation-name highlight">
+                                      {restaurant[0]}
+                                    </Typography>
+                                    <Typography variant="body2" align="center" className="recommendation-menu">
+                                      {restaurant[2]} <br />
+                                      {restaurant[1]}m, {restaurant[3]}
+                                    </Typography>
+                                  </Paper>
+                                </Grid>
+                              ))}
+                            </Grid>
                           ) : (
                             <Typography variant="h6" align="center" color="textSecondary">
                               아직 추천 결과가 없습니다.
@@ -372,7 +414,7 @@ const App = () => {
                     position: 'fixed',
                     bottom: '20px',
                     right: '20px',
-                    zIndex: 1200 // 다이얼로그보다 높은 z-index
+                    zIndex: 1200
                   }}
                 >
                   관리자 로그인
@@ -400,7 +442,7 @@ const App = () => {
                     onClick={() => {
                       if (openDialog === 'today') {
                         resetTodayData();
-                      } else {
+                      } else if (openDialog === 'all') {
                         resetSavedData();
                       }
                     }}
