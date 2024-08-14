@@ -74,14 +74,18 @@ const AdminLogin = ({ onLogin }) => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/authenticate', {
+      const trimmedApiKey = apiKey.trim();
+      const response = await fetch('http://10.10.52.39:3001/api/authenticate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',  // 캐시 무효화
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
-        body: JSON.stringify({ apiKey }),
+        body: JSON.stringify({ apiKey: trimmedApiKey }),
       });
-  
+      
       if (response.ok) {
         const data = await response.json();
         if (data.status === 'success') {
@@ -97,7 +101,7 @@ const AdminLogin = ({ onLogin }) => {
       setLoginError('로그인 요청 실패');
     }
   };
-
+  
   return (
     <Dialog open={true} onClose={() => onLogin(false)}>
       <DialogTitle>관리자 로그인</DialogTitle>
