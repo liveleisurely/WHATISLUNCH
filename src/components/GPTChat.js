@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TextField, Button, Paper, Typography } from '@mui/material';
 import axios from 'axios';
 
 const GPTChat = () => {
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const chatContainerRef = useRef(null);
+
+  // 새로운 메시지가 추가될 때마다 스크롤을 맨 아래로 이동
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
+
 
   const handleSendMessage = async () => {
     if (!message.trim()) return;

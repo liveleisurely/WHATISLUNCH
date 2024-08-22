@@ -26,5 +26,6 @@ yarn-error.log*
 Ontact_lunch.xlsx
 api_config.py
 main_backup.py
+gemini_test.ipynb
 
 *.csv

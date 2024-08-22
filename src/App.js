@@ -293,7 +293,10 @@ const App = () => {
               <Grid container spacing={2}>
                 <Grid item xs={12} md={5}>
                   <Box className="left-panel" sx={{flex: 1, textAlign: 'center', padding: '10px', position: { md: 'fixed' }, top:'20px', width: { xs: '100%', sm: '80%', md: '30%' }, ml: { md: 10 } }}>
-                    <img src={logo} alt="로고" className="logo" style={{ maxWidth: '50%', marginBottom: '10px' }} />
+                    <a href="https://ontacthealth.hanbiro.net/ngw/app/#/sign">
+                      <img src={logo} alt="로고" className="logo" style={{ maxWidth: '50%', marginBottom: '10px' }}/>
+                    </a>
+                    
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <img src={lunchImage} alt="What is lunch?" style={{ width: '55%', height: '200px', marginBottom: '10px' }} />
                       <img src={lunchImage2} alt="What is lunch?" style={{ width: '55%', height: '200px', marginBottom: '10px' }} />
